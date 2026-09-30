@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "My Diary",
+  "short_name": "My Diary",
+  "description": "Diary notebook with handwriting, tasks and job summary",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#c9d0cb",
+  "theme_color": "#c9d0cb",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
