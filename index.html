@@ -1428,22 +1428,22 @@ cv.addEventListener('contextmenu', e => e.preventDefault());
    ===================================================================== */
 const carry = $('#carry');
 let carryShowHidden = false;
-function pendingEarlier() {
-  const today = todayISO(), out = [];
-  pages.forEach(p => { if (p.date < today) p.blocks.forEach(b => { if (b.type === 'task' && !b.done && b.text.trim()) out.push({ p, b }); }); });
+function pendingEarlier(ref) {
+  const out = [];
+  pages.forEach(p => { if (p.date < ref) p.blocks.forEach(b => { if (b.type === 'task' && !b.done && b.text.trim()) out.push({ p, b }); }); });
   out.sort((x, y) => x.p.date < y.p.date ? -1 : x.p.date > y.p.date ? 1 : (x.b.at || 0) - (y.b.at || 0));
   return out;
 }
 function renderCarry() {
-  if (!cur || cur.date !== todayISO()) { carry.hidden = true; return; }
-  const all = pendingEarlier(), vis = all.filter(x => !x.b.hid), hid = all.filter(x => x.b.hid);
+  if (!cur || cur.date < todayISO()) { carry.hidden = true; return; }   // shown on Today and on any later day
+  const all = pendingEarlier(cur.date), vis = all.filter(x => !x.b.hid), hid = all.filter(x => x.b.hid);
   if (!all.length) { carry.hidden = true; if (cur) applySize(); return; }
   carry.hidden = false;
   if (S.carryHidden) {
     carry.innerHTML = `<div class="carrybar"><span>⏳ ${vis.length} pending from earlier${hid.length ? ` (+${hid.length} hidden)` : ''}</span><button class="btn" type="button" data-c="showall">Show</button></div>`;
     applySize(); return;
   }
-  const today = todayISO();
+  const today = cur.date;   // age is counted up to the day being viewed
   const row = ({ p, b }) => {
     const age = Math.max(0, dd(p.date, today)), r = b.rid ? rules.get(b.rid) : null;
     return `<div class="cr${age >= 3 ? ' old' : ''}${b.hid ? ' hid' : ''}" data-p="${p.id}" data-b="${b.id}">
