@@ -296,7 +296,7 @@ table.jt table.sub td{display:table-cell;float:none}
 /* ---------- task row v2: click to act, sections, comments, details ---------- */
 .task{position:relative}
 .task.sel{background:var(--accent-soft)}
-.task .tt[readonly]{cursor:pointer;caret-color:transparent}
+.tbar{display:none!important}
 .task.p-h::before,.task.p-m::before,.task.p-l::before{content:'';position:absolute;left:-14px;top:6px;bottom:6px;width:4px;border-radius:2px}
 .task.p-h::before{background:#d64545}.task.p-m::before{background:#e39a1d}.task.p-l::before{background:#6b9bd6}
 .chipx{flex:none;align-self:flex-start;margin-top:4px;height:26px;padding:0 9px;border:0;border-radius:13px;font:600 12px/26px var(--sans);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
@@ -384,7 +384,19 @@ body[data-tool="lasso"] #colors,body[data-tool="eraser"] #colors{display:none}
 body[data-tool="lasso"] #sizes{display:none}
 
 /* ---------- text style bar, links, sub-tasks, dependencies ---------- */
-#fmtbar{display:none;position:absolute;left:0;right:0;top:100%;z-index:31;gap:6px 8px;flex-wrap:wrap;align-items:center;justify-content:center;padding:8px 12px;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 8px 16px rgba(0,0,0,.14)}
+#fmtbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));z-index:60;width:min(980px,calc(100vw - 16px));flex-direction:column;gap:6px;padding:8px 10px;background:var(--paper);border-radius:18px;box-shadow:var(--shadow),0 0 0 1px var(--line)}
+.fmrow{display:flex;gap:6px 8px;flex-wrap:wrap;align-items:center;justify-content:center}
+#taskbar{display:none;border-top:1px solid var(--line);padding-top:6px}
+body.fmt.taskfmt #taskbar{display:flex}
+#taskbar .fmtb{min-height:42px}
+#taskbar .danger{color:var(--danger)}
+body.fmt #desk{padding-bottom:calc(env(safe-area-inset-bottom) + 190px)}
+.grip{display:none;flex:none;align-self:flex-start;width:34px;height:34px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:19px;padding:0;touch-action:none;cursor:grab}
+.task.sel .grip{display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:760px){
+  #fmtbar{bottom:auto;top:var(--fmtTop,70px);left:8px;right:8px;width:auto;transform:none}
+  body.fmt #desk{padding-bottom:calc(env(safe-area-inset-bottom) + 96px)}
+}
 body.fmt #fmtbar{display:flex}
 body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
 .fmtb{min-width:42px;height:42px;padding:0 12px;border:0;border-radius:12px;background:var(--btn);font:600 15px var(--sans);box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
@@ -402,6 +414,36 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
 .task.sub{box-shadow:inset 2px 0 0 var(--line)}
 .task:not(.sub) [data-act="outdent"]{display:none}
 @media (max-width:760px){.prog,.dep{display:none}.task.sel .prog:not(:empty),.task.sel .dep:not(:empty){display:block}}
+
+/* ---------- day status (compact, shareable) ---------- */
+.dayh{margin:0 0 10px;font:700 22px var(--serif)}
+.dstat{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dstat .stc{padding:8px 14px;border-radius:14px;font:600 14px var(--sans)}
+.dstat .stc b{font:700 22px var(--serif);margin-right:4px}
+.stc.s-done{background:#dff3e6;color:#17623b}.stc.s-pend{background:#fdebd2;color:#8a4b00}.stc.s-over{background:#fde3e0;color:#a32a1d}.stc.s-prog{background:#e0ecff;color:#1f4fa0}
+:root[data-theme="dark"] .stc.s-done{background:#1f4a33;color:#9be3bb}:root[data-theme="dark"] .stc.s-pend{background:#57411a;color:#ffd18b}
+:root[data-theme="dark"] .stc.s-over{background:#5a2620;color:#ffb3a8}:root[data-theme="dark"] .stc.s-prog{background:#23365a;color:#b8d0ff}
+.dgs{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));align-items:start}
+.dg{background:var(--paper);border-radius:16px;box-shadow:var(--shadow);padding:10px 14px 6px;border-left:6px solid var(--gc,var(--accent));min-width:0}
+.dg h3{margin:0 0 4px;font:700 16px var(--sans)}
+.dg h3 small{color:var(--muted);font-weight:600}
+.drow{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+.drow .cb{margin-top:-1px}
+.drow .dt{flex:1;min-width:0;font:16px/1.3 var(--serif);word-break:break-word}
+.dm{font:12px/1.45 var(--sans);color:var(--muted);margin-top:2px}
+.dm .bad{color:var(--danger);font-weight:700}
+.drow.done .jl,.drow.done .dt>span:first-child{text-decoration:line-through;color:var(--muted)}
+.g-od{--gc:#d64545}.g-st{--gc:#3b6fd6}.g-td{--gc:#e39a1d}.g-er{--gc:#8a6d3b}.g-mr{--gc:#7a3fb5}.g-dn{--gc:#1b7f52}
+
+/* ---------- template editor rows ---------- */
+.tir{display:flex;gap:6px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.tir select{height:44px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);font:600 14px var(--sans);padding:0 8px;width:172px}
+.tir .tit{flex:1;min-width:150px;width:auto;max-width:none}
+.tir .tiw{width:120px}
+.tir .ic{width:40px;height:40px}
+.tpreview li.txt{list-style:none;margin-left:-20px;color:var(--muted);font-style:italic}
+.tpreview li.chk{list-style:none;margin-left:-20px}
+.tpreview li.chk::before{content:'☐ ';color:var(--accent)}
 
 /* ---------- tablets & phones ---------- */
 @media (max-width:900px){
@@ -459,21 +501,16 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
   </div>
   <div id="sumhead">
     <button class="btn" id="sBack" type="button">‹ Diary</button>
-    <span class="seg" id="sTabs"><button type="button" data-t="days">📅 Day-wise</button><button type="button" data-t="jobs">🗂️ All jobs</button><button type="button" data-t="sections">📑 Section-wise</button><button type="button" data-t="tasks">🔁 Task-wise</button></span>
+    <span class="seg" id="sTabs"><button type="button" data-t="today">☀️ Today</button><button type="button" data-t="days">📅 Day-wise</button><button type="button" data-t="jobs">🗂️ All jobs</button><button type="button" data-t="sections">📑 Section-wise</button><button type="button" data-t="tasks">🔁 Task-wise</button></span>
     <span class="sp"></span>
     <button class="btn primary" id="bWa" type="button">💬 WhatsApp</button>
+    <button class="btn primary" id="bImg" type="button">🖼️ Share image</button>
+    <button class="btn" id="bJpg" type="button">⬇️ Save JPEG</button>
     <button class="btn" id="bShare" type="button">📤 Share</button>
     <button class="btn" id="bCopy" type="button">📋 Copy</button>
     <button class="btn" id="bPage" type="button">🌐 Page file</button>
     <button class="btn" id="bCsv" type="button">📑 Excel/CSV</button>
     <button class="btn" id="bPdf" type="button">🖨️ PDF</button>
-  </div>
-  <div id="fmtbar" role="toolbar" aria-label="Text style">
-    <select id="fmFont" class="fsel" aria-label="Font"><option value="">Font: default</option><option value="serif">Serif</option><option value="sans">Clean sans</option><option value="hand">Handwriting style</option><option value="mono">Typewriter</option></select>
-    <button class="fmtb" id="fmSm" type="button" aria-label="Smaller text">A−</button><span class="pl" id="fmSz">20</span><button class="fmtb" id="fmLg" type="button" aria-label="Bigger text">A+</button>
-    <button class="fmtb" id="fmB" type="button" aria-label="Bold"><b>B</b></button><button class="fmtb" id="fmI" type="button" aria-label="Italic"><i>I</i></button>
-    <span class="grp" id="fmCol" role="group" aria-label="Text colour"></span>
-    <button class="fmtb" id="fmLink" type="button">🔗 Link</button><button class="fmtb" id="fmClr" type="button">Reset style</button>
   </div>
   <div id="penbar">
     <span class="seg" id="penmode" role="group" aria-label="What the pen does"><button type="button" data-pm="text">🔤 Pen writes text</button><button type="button" data-pm="ink">✍️ Pen draws</button></span>
@@ -495,6 +532,7 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
     <span class="sp"></span>
     <button class="pill" id="saveState" type="button" aria-live="polite"></button>
     <label class="btn" title="Pick a date">📅 Date<input type="date" id="datePick" aria-label="Pick a date"></label>
+    <button class="btn" id="bDay" type="button">📤 Day status</button>
     <button class="btn" id="bTpl" type="button">📋 Templates</button>
     <button class="btn primary" id="bNew" type="button">＋ New page</button>
   </nav>
@@ -555,6 +593,21 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
   </div>
 </div>
 
+<div id="fmtbar" role="toolbar" aria-label="Text style and task actions">
+  <div class="fmrow">
+    <select id="fmFont" class="fsel" aria-label="Font"><option value="">Font: default</option><option value="serif">Serif</option><option value="sans">Clean sans</option><option value="hand">Handwriting style</option><option value="mono">Typewriter</option></select>
+    <button class="fmtb" id="fmSm" type="button" aria-label="Smaller text">A−</button><span class="pl" id="fmSz">20</span><button class="fmtb" id="fmLg" type="button" aria-label="Bigger text">A+</button>
+    <button class="fmtb" id="fmB" type="button" aria-label="Bold"><b>B</b></button><button class="fmtb" id="fmI" type="button" aria-label="Italic"><i>I</i></button>
+    <span class="grp" id="fmCol" role="group" aria-label="Text colour"></span>
+    <button class="fmtb" id="fmLink" type="button">🔗 Link</button><button class="fmtb" id="fmClr" type="button">Reset style</button>
+    <button class="fmtb" id="fmClose" type="button" aria-label="Close this bar">✕</button>
+  </div>
+  <div class="fmrow" id="taskbar">
+    <button class="fmtb" type="button" data-ta="repeat">🔁 Repeat</button><button class="fmtb" type="button" data-ta="indent">⇥ Sub-task</button><button class="fmtb" type="button" data-ta="outdent">⇤ Promote</button>
+    <button class="fmtb" type="button" data-ta="up" aria-label="Move up">↑</button><button class="fmtb" type="button" data-ta="down" aria-label="Move down">↓</button>
+    <button class="fmtb" type="button" data-ta="details">⚙ Details</button><button class="fmtb" type="button" data-ta="comment">💬 Comment</button><button class="fmtb danger" type="button" data-ta="del">🗑️ Delete</button>
+  </div>
+</div>
 <div id="ring" hidden></div>
 <div id="remind" aria-live="polite"></div>
 <div id="modal" hidden></div>
@@ -1111,7 +1164,7 @@ function makeBlockEl(b) {
     el.className = 'blk task';
     el.innerHTML =
       '<button class="chk" type="button" role="checkbox" data-act="toggle"><svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true"><rect class="box" x="2" y="2" width="22" height="22" rx="7"/><path class="tick" d="M7.5 13.4l3.8 3.8 7.2-7.6"/></svg></button>' +
-      '<textarea class="tt" rows="1" readonly data-x="1" aria-label="Task (tap the row for actions)" placeholder="New task"></textarea>' +
+      '<textarea class="tt" rows="1" data-x="1" aria-label="Task. Type or write with the Pencil" placeholder="New task"></textarea>' +
       '<span class="chipx prog" title="Sub-tasks done"></span>' +
       '<button class="chipx dep" type="button" data-act="details" aria-label="Waits for another task"></button>' +
       '<button class="chipx stt" type="button" data-act="details" aria-label="Stage"></button>' +
@@ -1121,11 +1174,7 @@ function makeBlockEl(b) {
       '<span class="tsec" aria-hidden="true"></span>' +
       '<button class="lkb" type="button" data-act="openlink" hidden aria-label="Open link">🔗</button>' +
       '<button class="cmt" type="button" data-act="comment" aria-label="Comments">💬<b></b></button>' +
-      '<div class="tbar" role="toolbar" aria-label="Task actions">' +
-      '<button type="button" data-act="edit">✎ Edit</button><button type="button" data-act="repeat">🔁 Repeat</button>' +
-      '<button type="button" data-act="indent">⇥ Sub-task</button><button type="button" data-act="outdent">⇤ Promote</button>' +
-      '<button type="button" class="tdel" data-act="del">🗑️ Delete</button><button type="button" data-act="details">⚙ Details</button>' +
-      '<button type="button" class="dh" data-drag="1" aria-label="Drag up or down to move, sideways to make a sub-task" title="Drag to move">⠿ Move</button></div>';
+      '<button class="grip" type="button" data-drag="1" aria-label="Drag up or down to move, sideways to make a sub-task" title="Drag to move">⠿</button>';
   } else if (b.type === 'section') {
     el.className = 'blk secblk';
     el.innerHTML = '<textarea class="sx" rows="1" data-x="1" aria-label="Section heading" placeholder="Section heading, e.g. Electrical"></textarea>' +
@@ -1235,19 +1284,13 @@ function setSel(id) {
   const el = id && elMap.get(id);
   if (!el) { selId = null; return; }
   el.classList.add('sel');
-  if (id) { lastFocusId = id; showFmt(id); }
-  const bar = el.querySelector('.tbar');
-  if (bar) {
-    bar.classList.remove('up');
-    const sr = els.sheet.getBoundingClientRect(), rr = el.getBoundingClientRect();
-    if (rr.bottom + bar.offsetHeight + 8 > sr.bottom && rr.top - bar.offsetHeight - 8 > sr.top) bar.classList.add('up');
-  }
+  lastFocusId = id; showFmt(id);
 }
-function clearSel() { if (selId) { const o = elMap.get(selId); if (o) o.classList.remove('sel'); selId = null; } }
+function clearSel() { if (selId) { const o = elMap.get(selId); if (o) o.classList.remove('sel'); selId = null; } document.body.classList.remove('taskfmt'); }
 function focusBlock(id, toEnd = true) {
   const el = elMap.get(id); const ta = el && el.querySelector('textarea');
   if (!ta) return;
-  if (el.classList.contains('task')) { ta.readOnly = false; el.classList.add('editing'); setSel(id); }
+  if (el.classList.contains('task')) setSel(id);
   ta.focus();
   if (toEnd) { const n = ta.value.length; try { ta.setSelectionRange(n, n); } catch (e) {} }
 }
@@ -1712,8 +1755,13 @@ els.sheet.addEventListener('pointercancel', endDrag);
 
 /* ---- text style bar: font, size, bold, italic, colour, link (applies to the whole line/paragraph) ---- */
 let fmtTarget = null;
-function showFmt(id) { fmtTarget = id; document.body.classList.add('fmt'); updateFmt(); }
-function hideFmt() { fmtTarget = null; document.body.classList.remove('fmt'); }
+function placeFmt() { if (window.innerWidth <= 760) document.documentElement.style.setProperty('--fmtTop', ($('#top').offsetHeight + 4) + 'px'); }
+function showFmt(id) {
+  fmtTarget = id; document.body.classList.add('fmt');
+  const b = getBlock(id); document.body.classList.toggle('taskfmt', !!(b && b.type === 'task'));
+  placeFmt(); updateFmt();
+}
+function hideFmt() { fmtTarget = null; document.body.classList.remove('fmt', 'taskfmt'); }
 function updateFmt() {
   const b = fmtTarget && getBlock(fmtTarget); if (!b) return;
   $('#fmFont').value = b.fs || '';
@@ -1734,6 +1782,33 @@ $('#fmSm').onclick = () => fmSize(-2); $('#fmLg').onclick = () => fmSize(2);
 $('#fmB').onclick = () => fmtApply(b => { if (b.fb) delete b.fb; else b.fb = true; });
 $('#fmI').onclick = () => fmtApply(b => { if (b.fi) delete b.fi; else b.fi = true; });
 $('#fmCol').addEventListener('click', e => { const x = e.target.closest('[data-fc]'); if (x) fmtApply(b => { if (x.dataset.fc === 'auto') delete b.fc; else b.fc = x.dataset.fc; }); });
+$('#fmClose').onclick = () => { clearSel(); hideFmt(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); };
+function moveTask(id, dir) {
+  begin();
+  const gids = [id].concat(kidIds(id)), grp = cur.blocks.filter(b => gids.includes(b.id));
+  const isAct = b => !(b.type === 'task' && b.done);
+  const first = cur.blocks.findIndex(b => b.id === id), last = cur.blocks.findIndex(b => b.id === gids[gids.length - 1]);
+  let ref = -1;
+  if (dir < 0) { for (let j = first - 1; j >= 0; j--) if (isAct(cur.blocks[j])) { ref = j; break; } }
+  else { for (let j = last + 1; j < cur.blocks.length; j++) if (isAct(cur.blocks[j]) && cur.blocks[j].type !== 'text') { ref = j; break; } }
+  if (ref < 0) { toast(dir < 0 ? 'Already at the top.' : 'Already at the bottom.'); return; }
+  const refId = cur.blocks[ref].id, refKids = dir > 0 && cur.blocks[ref].type === 'task' ? kidIds(refId) : [];
+  cur.blocks = cur.blocks.filter(b => !gids.includes(b.id));
+  let ti = cur.blocks.findIndex(b => b.id === refId);
+  if (dir > 0) ti += 1 + refKids.length;
+  cur.blocks.splice(ti, 0, ...grp);
+  fixLevels(); ensureTrailing(); renderBlocks(true); commit();
+}
+$('#taskbar').addEventListener('click', e => {
+  const b = e.target.closest('[data-ta]'); if (!b || !selId) return;
+  const id = selId, a = b.dataset.ta;
+  if (a === 'repeat') openRepeat(id); else if (a === 'indent') indentTask(id, 1); else if (a === 'outdent') indentTask(id, -1);
+  else if (a === 'up') moveTask(id, -1); else if (a === 'down') moveTask(id, 1);
+  else if (a === 'details') openDetails(id); else if (a === 'comment') openComments(cur.id, id);
+  else if (a === 'del') { deleteBlock(id); hideFmt(); }
+});
+$('#fmtbar').addEventListener('mousedown', e => { if (!e.target.closest('select,input')) e.preventDefault(); });
+window.addEventListener('resize', () => { if (fmtTarget) placeFmt(); });
 $('#fmClr').onclick = () => fmtApply(b => { ['fs', 'fz', 'fb', 'fi', 'fc', 'lk'].forEach(k => delete b[k]); });
 $('#fmLink').onclick = () => {
   const b = fmtTarget && getBlock(fmtTarget); if (!b) return;
@@ -1752,9 +1827,9 @@ els.sheet.addEventListener('click', e => {
   const btn = e.target.closest('[data-act]');
   if (!btn) {
     const trow = e.target.closest('.task');
-    if (!trow || e.target.closest('.tbar')) return;
-    if (e.target.classList.contains('tt') && !e.target.readOnly) return;     // typing inside the task
-    if (selId === trow.dataset.id && !trow.classList.contains('editing')) clearSel(); else setSel(trow.dataset.id);
+    if (!trow) return;
+    if (e.target.classList.contains('tt')) return;                           // typing / writing inside the task
+    setSel(trow.dataset.id);
     return;
   }
   const row = btn.closest('[data-id]'); if (!row) return;
@@ -1800,15 +1875,14 @@ els.sheet.addEventListener('keydown', e => {
 });
 els.sheet.addEventListener('focusin', e => {
   const row = e.target.closest && e.target.closest('[data-id]');
-  if (row && e.target instanceof HTMLTextAreaElement) { lastFocusId = row.dataset.id; showFmt(row.dataset.id); }
+  if (row && e.target instanceof HTMLTextAreaElement) {
+    lastFocusId = row.dataset.id;
+    if (row.classList.contains('task')) setSel(row.dataset.id); else { clearSel(); showFmt(row.dataset.id); }
+  }
 });
-els.sheet.addEventListener('focusout', e => {
-  begin();
-  const ta = e.target;
-  if (ta && ta.classList && ta.classList.contains('tt')) setTimeout(() => { if (document.activeElement !== ta) { ta.readOnly = true; const rw = ta.closest('.task'); if (rw) rw.classList.remove('editing'); } }, 150);
-});
+els.sheet.addEventListener('focusout', () => begin());
 document.addEventListener('click', e => {
-  if (!e.target.closest('.task') && selId) clearSel();
+  if (selId && e.target.isConnected && !e.target.closest('.task') && !e.target.closest('#fmtbar') && !e.target.closest('#modal') && !e.target.closest('#toast')) clearSel();
   if (fmtTarget && e.target.isConnected && !e.target.closest('#sheet') && !e.target.closest('#fmtbar') && !e.target.closest('#modal') && !e.target.closest('#toolbar')) hideFmt();
 });
 
@@ -2335,7 +2409,7 @@ function sanitizeTemplates(arr) {
   return (Array.isArray(arr) ? arr : []).map(t => {
     if (!t || typeof t.id !== 'string') return null;
     const items = (Array.isArray(t.items) ? t.items : []).map(i => i && String(i.text || '').trim()
-      ? { k: i.k === 's' ? 's' : 't', text: String(i.text).trim().slice(0, 300), who: String(i.who || '').trim().slice(0, 40) } : null).filter(Boolean).slice(0, 200);
+      ? { k: i.k === 's' ? 's' : i.k === 'x' ? 'x' : 't', text: String(i.text).trim().slice(0, 300), who: i.k === 'x' || i.k === 's' ? '' : String(i.who || '').trim().slice(0, 40) } : null).filter(Boolean).slice(0, 200);
     return { id: t.id, name: String(t.name || 'Template').slice(0, 80), items, created: Number(t.created) || Date.now(), updated: Number(t.updated) || Date.now() };
   }).filter(Boolean);
 }
@@ -2359,10 +2433,11 @@ function mergeTemplates(list) {
   if (ch) saveTemplates();
   return ch;
 }
-const tplToText = items => items.map(i => i.k === 's' ? '# ' + i.text : i.text + (i.who ? ' @' + i.who : '')).join('\n');
+const tplToText = items => items.map(i => i.k === 's' ? '# ' + i.text : i.k === 'x' ? '- ' + i.text : i.text + (i.who ? ' @' + i.who : '')).join('\n');
 function textToItems(txt) {
   return String(txt).split('\n').map(l => l.trim()).filter(Boolean).map(l => {
     if (/^#+\s*/.test(l)) return { k: 's', text: l.replace(/^#+\s*/, '').trim(), who: '' };
+    if (/^[-•]\s+/.test(l)) return { k: 'x', text: l.replace(/^[-•]\s+/, '').trim(), who: '' };
     const m = l.match(/^(.*?)\s+@(.+)$/);
     return m ? { k: 't', text: m[1].trim(), who: m[2].trim() } : { k: 't', text: l, who: '' };
   }).filter(i => i.text);
@@ -2371,9 +2446,9 @@ function renderTemplates() {
   const box = $('#tpl'), today = todayISO();
   if (!templates.length) { box.innerHTML = '<p class="empty">No templates yet. Tap <b>＋ New template</b>, or open a diary day and use <b>Save this page as template</b>.</p>'; return; }
   box.innerHTML = templates.map(t => {
-    const nt = t.items.filter(i => i.k === 't').length, ns = t.items.length - nt;
-    const prev = t.items.slice(0, 8).map(i => i.k === 's' ? `<li class="sec">${esc(i.text)}</li>` : `<li>${esc(i.text)}${i.who ? ` <small>· ${esc(i.who)}</small>` : ''}</li>`).join('') + (t.items.length > 8 ? `<li><small>… and ${t.items.length - 8} more</small></li>` : '');
-    return `<section class="card" data-tid="${t.id}"><h3>${esc(t.name)} <span class="cnt">${nt} task${nt === 1 ? '' : 's'}${ns ? `, ${ns} section${ns === 1 ? '' : 's'}` : ''}</span></h3><ul class="tpreview">${prev}</ul>
+    const nt = t.items.filter(i => i.k === 't').length, nx = t.items.filter(i => i.k === 'x').length, ns = t.items.filter(i => i.k === 's').length;
+    const prev = t.items.slice(0, 8).map(i => i.k === 's' ? `<li class="sec">${esc(i.text)}</li>` : i.k === 'x' ? `<li class="txt">${esc(i.text)}</li>` : `<li class="chk">${esc(i.text)}${i.who ? ` <small>· ${esc(i.who)}</small>` : ''}</li>`).join('') + (t.items.length > 8 ? `<li><small>… and ${t.items.length - 8} more</small></li>` : '');
+    return `<section class="card" data-tid="${t.id}"><h3>${esc(t.name)} <span class="cnt">${nt} checkbox task${nt === 1 ? '' : 's'}${nx ? `, ${nx} text line${nx === 1 ? '' : 's'}` : ''}${ns ? `, ${ns} section${ns === 1 ? '' : 's'}` : ''}</span></h3><ul class="tpreview">${prev}</ul>
       <div class="btns" style="justify-content:flex-start"><button class="btn primary" type="button" data-tp="add">＋ Add to ${esc(dayShort(cur.date))}</button>${cur.date !== today ? '<button class="btn" type="button" data-tp="addtoday">Add to Today</button>' : ''}<button class="btn" type="button" data-tp="edit">✎ Edit</button><button class="btn" type="button" data-tp="del">🗑️ Delete</button></div></section>`;
   }).join('');
 }
@@ -2392,26 +2467,61 @@ function applyTemplate(tid, date) {
   if (date && date !== cur.date) openDate(date);
   begin(); setMode('text');
   const now = Date.now();
-  const blocks = t.items.map(i => i.k === 's' ? { id: uid(), type: 'section', text: i.text } : Object.assign({ id: uid(), type: 'task', text: i.text, done: false, at: now }, i.who ? { who: i.who } : {}));
+  const blocks = t.items.map(i => i.k === 's' ? { id: uid(), type: 'section', text: i.text } : i.k === 'x' ? { id: uid(), type: 'text', text: i.text } : Object.assign({ id: uid(), type: 'task', text: i.text, done: false, at: now }, i.who ? { who: i.who } : {}));
   if (!blocks.length) return;
   cur.blocks.splice(insertAt(), 0, ...blocks);
   ensureTrailing(); renderBlocks(true); commit();
   const first = elMap.get(blocks[0].id); if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' });
-  const n = blocks.filter(b => b.type === 'task').length;
-  toast(`Added "${t.name}": ${n} task${n === 1 ? '' : 's'} on ${dayShort(cur.date)}`);
+  const n = blocks.filter(b => b.type === 'task').length, nx = blocks.filter(b => b.type === 'text').length;
+  toast(`Added "${t.name}": ${n} checkbox task${n === 1 ? '' : 's'}${nx ? ` and ${nx} text line${nx === 1 ? '' : 's'}` : ''} on ${dayShort(cur.date)}`);
 }
 function openTemplateEditor(id, prefill) {
   const ex = id ? templates.find(t => t.id === id) : null;
+  let items = (ex ? ex.items : (prefill || [])).map(i => Object.assign({}, i));
+  if (!items.length) items = [{ k: 't', text: '', who: '' }];
   openModal(`<h2>${ex ? 'Edit template' : 'New template'}</h2>
     <div class="fld"><label class="dl" for="tName">Template name</label><input id="tName" class="qin" type="text" maxlength="80" placeholder="e.g. Morning round"></div>
-    <div class="fld"><label class="dl" for="tItems">Items, one per line</label>
-      <textarea id="tItems" class="qin" rows="9" style="height:auto;padding:10px 14px;font:16px/1.5 var(--sans)" placeholder="# Electrical&#10;Check UPS battery @Ravi&#10;Verify weigh feeder&#10;# Mechanical&#10;Grease conveyor"></textarea>
-      <p class="hint">Start a line with # for a section heading. Add @Name at the end of a line to set who is responsible.</p></div>
+    <div class="fld"><span class="dl">Items. Choose for each line: checkbox task, plain text, or section heading</span>
+      <div id="tRows"></div>
+      <div class="rgrid"><button class="btn" type="button" data-ta2="t">＋ Checkbox task</button><button class="btn" type="button" data-ta2="x">＋ Text line</button><button class="btn" type="button" data-ta2="s">＋ Section</button></div>
+      <details class="occ"><summary>Paste many lines at once</summary>
+        <textarea id="tBulk" class="qin" rows="5" style="height:auto;padding:10px 14px;font:15px/1.5 var(--sans)" placeholder="# Section heading&#10;- Plain text line&#10;Checkbox task @Ravi"></textarea>
+        <p class="hint"># makes a section heading, - makes a plain text line, anything else becomes a checkbox task. @Name at the end sets who is responsible.</p>
+        <button class="btn" type="button" data-ta2="bulk">Add these lines</button></details></div>
     <div class="btns">${ex ? '<button class="btn" type="button" data-te="del">Delete</button>' : ''}<button class="btn" type="button" data-te="x">Cancel</button><button class="btn primary" type="button" data-te="ok">Save template</button></div>`);
-  const P = $('.panel', modal);
+  const P = $('.panel', modal), rows = $('#tRows', P);
   $('#tName', P).value = ex ? ex.name : '';
-  $('#tItems', P).value = ex ? tplToText(ex.items) : (prefill ? tplToText(prefill) : '');
+  const draw = focusIdx => {
+    rows.innerHTML = items.map((it, i) => `<div class="tir" data-i="${i}">
+      <select class="tik" aria-label="Line type"><option value="t"${it.k === 't' ? ' selected' : ''}>☐ Checkbox task</option><option value="x"${it.k === 'x' ? ' selected' : ''}>✎ Text line</option><option value="s"${it.k === 's' ? ' selected' : ''}>📑 Section</option></select>
+      <input class="qin sm tit" type="text" maxlength="300" placeholder="${it.k === 's' ? 'Section heading' : it.k === 'x' ? 'Text line' : 'Task'}" value="${esc(it.text)}" aria-label="Text">
+      ${it.k === 't' ? `<input class="qin sm tiw" type="text" maxlength="40" placeholder="Assignee" value="${esc(it.who || '')}" aria-label="Assignee">` : ''}
+      <button class="ic" type="button" data-ir="up" aria-label="Move up">↑</button><button class="ic" type="button" data-ir="down" aria-label="Move down">↓</button><button class="ic" type="button" data-ir="rm" aria-label="Remove line">✕</button></div>`).join('');
+    if (focusIdx != null) { const el = rows.querySelector(`[data-i="${focusIdx}"] .tit`); if (el) el.focus(); }
+  };
+  draw();
+  rows.addEventListener('input', e => {
+    const r = e.target.closest('[data-i]'); if (!r) return; const it = items[+r.dataset.i];
+    if (e.target.classList.contains('tit')) it.text = e.target.value; else if (e.target.classList.contains('tiw')) it.who = e.target.value;
+  });
+  rows.addEventListener('change', e => {
+    if (!e.target.classList.contains('tik')) return;
+    const r = e.target.closest('[data-i]'); items[+r.dataset.i].k = e.target.value; draw(+r.dataset.i);
+  });
+  rows.addEventListener('click', e => {
+    const b = e.target.closest('[data-ir]'); if (!b) return;
+    const i = +b.closest('[data-i]').dataset.i, k = b.dataset.ir;
+    if (k === 'rm') { items.splice(i, 1); if (!items.length) items.push({ k: 't', text: '', who: '' }); draw(); }
+    else if (k === 'up' && i > 0) { [items[i - 1], items[i]] = [items[i], items[i - 1]]; draw(i - 1); }
+    else if (k === 'down' && i < items.length - 1) { [items[i + 1], items[i]] = [items[i], items[i + 1]]; draw(i + 1); }
+  });
   P.addEventListener('click', async e => {
+    const add = e.target.closest('[data-ta2]');
+    if (add) {
+      const k = add.dataset.ta2;
+      if (k === 'bulk') { const more = textToItems($('#tBulk', P).value); if (!more.length) { toast('Type or paste some lines first.'); return; } if (items.length === 1 && !items[0].text.trim()) items = []; items = items.concat(more); $('#tBulk', P).value = ''; draw(); toast(`${more.length} line${more.length === 1 ? '' : 's'} added`); return; }
+      items.push({ k, text: '', who: '' }); draw(items.length - 1); return;
+    }
     const a = e.target.closest('[data-te]'); if (!a) return;
     const k = a.dataset.te;
     if (k === 'x') { closeModal(); return; }
@@ -2422,10 +2532,11 @@ function openTemplateEditor(id, prefill) {
       }
       return;
     }
-    const name = $('#tName', P).value.trim() || 'Template', items = textToItems($('#tItems', P).value);
-    if (!items.length) { toast('Add at least one line.'); return; }
-    if (ex) Object.assign(ex, { name, items, updated: Date.now() });
-    else templates.push({ id: uid(), name, items, created: Date.now(), updated: Date.now() });
+    const name = $('#tName', P).value.trim() || 'Template';
+    const clean = items.map(i => ({ k: i.k, text: String(i.text || '').trim(), who: i.k === 't' ? String(i.who || '').trim() : '' })).filter(i => i.text);
+    if (!clean.length) { toast('Add at least one line.'); return; }
+    if (ex) Object.assign(ex, { name, items: clean, updated: Date.now() });
+    else templates.push({ id: uid(), name, items: clean, created: Date.now(), updated: Date.now() });
     saveTemplates(); closeModal(); renderTemplates(); toast(`Template "${name}" saved`);
   });
   $('#tName', P).focus();
@@ -2434,8 +2545,8 @@ $('#bTpl').onclick = openTemplates;
 $('#tBack').onclick = closeTemplates;
 $('#tNew').onclick = () => openTemplateEditor(null);
 $('#tSave').onclick = () => {
-  const items = cur.blocks.filter(b => (b.type === 'task' || b.type === 'section') && b.text.trim()).map(b => ({ k: b.type === 'section' ? 's' : 't', text: b.text.trim(), who: b.who || '' }));
-  if (!items.length) { toast('This page has no tasks to save. Add tasks first.'); return; }
+  const items = cur.blocks.filter(b => b.text.trim()).map(b => ({ k: b.type === 'section' ? 's' : b.type === 'text' ? 'x' : 't', text: b.text.trim(), who: b.type === 'task' ? (b.who || '') : '' }));
+  if (!items.length) { toast('This page has nothing to save yet. Add tasks or text first.'); return; }
   openTemplateEditor(null, items);
 };
 $('#tpl').addEventListener('click', e => {
@@ -2603,7 +2714,7 @@ $('#padTask').onclick = () => padInsert(true);
 /* =====================================================================
    Summary: table view, filters, WhatsApp / share
    ===================================================================== */
-const sum = { sec: '', pri: '', stg: '', sort: '', tab: 'days', r: { days: '7', jobs: 'all', sections: 'all' }, from: '', to: '', filter: 'all', who: '', q: '', year: String(new Date().getFullYear()), early: true };
+const sum = { day: '', sec: '', pri: '', stg: '', sort: '', tab: 'today', r: { days: '7', jobs: 'all', sections: 'all' }, from: '', to: '', filter: 'all', who: '', q: '', year: String(new Date().getFullYear()), early: true };
 const openKeys = new Set();
 let sumModel = null;
 const todayISO = () => isoOf(new Date());
@@ -2752,7 +2863,176 @@ function buildTaskwise() {
   const tot = groups.reduce((a, g) => ({ planned: a.planned + g.planned, completed: a.completed + g.completed, pending: a.pending + g.pending, upcoming: a.upcoming + g.upcoming, skipped: a.skipped + (g.skipped || 0) }), { planned: 0, completed: 0, pending: 0, upcoming: 0, skipped: 0 });
   return { kind: 'tasks', title: 'Task-wise summary', period: y === 'all' ? 'All years' : 'Year ' + y, whoLabel: sum.who === '__none' ? 'Unassigned' : sum.who, groups, tot };
 }
+const PRN = { h: 'High', m: 'Medium', l: 'Low' };
+function buildDay(date) {
+  const today = todayISO(), all = [];
+  const okWho = t => sum.who === '__none' ? !t.who : (!sum.who || t.who === sum.who);
+  pages.forEach(p => p.blocks.forEach(b => { if (b.type === 'task' && b.text.trim()) { const t = mkT(p, b); if (okWho(t)) all.push(t); } }));
+  const doneDay = t => t.doneAt ? isoOf(new Date(t.doneAt)) : t.date;
+  const done = all.filter(t => t.done && doneDay(t) === date);
+  const od = [], stg = new Map(), td = [], er = [], mr = new Map();
+  all.filter(t => !t.done && t.date <= date).forEach(t => {
+    if (t.date < date && date < today) return;                       // past days: only what was written that day
+    if (t.rid && rules.get(t.rid) && t.date < date) {                // missed repeats: one line per task
+      const g = mr.get(t.rid) || { text: t.text, rep: t.rep, who: t.who, dates: [] }; g.dates.push(t.date); mr.set(t.rid, g); return;
+    }
+    if (t.due && t.due < date) od.push(t);
+    else if (t.st) { if (!stg.has(t.st)) stg.set(t.st, []); stg.get(t.st).push(t); }
+    else if (t.date === date) td.push(t); else er.push(t);
+  });
+  const pr = { h: 0, m: 1, l: 2, '': 3 };
+  const sort = a => a.sort((x, y) => (pr[x.pri] - pr[y.pri]) || ((x.due || '9999') < (y.due || '9999') ? -1 : (x.due || '9999') > (y.due || '9999') ? 1 : 0) || x.at - y.at);
+  const isToday = date === today;
+  const groups = [];
+  if (od.length) groups.push({ key: 'od', icon: '⚠', title: 'Overdue', color: '#d64545', items: sort(od) });
+  [...stg.entries()].forEach(([name, items]) => groups.push({ key: 'st', icon: /progress/i.test(name) ? '🔄' : '⏸', title: name, color: '#3b6fd6', items: sort(items) }));
+  if (td.length) groups.push({ key: 'td', icon: '⏳', title: isToday ? 'Pending today' : 'Pending that day', color: '#e39a1d', items: sort(td) });
+  if (er.length) groups.push({ key: 'er', icon: '🕓', title: 'Earlier pending', color: '#8a6d3b', items: sort(er) });
+  const missed = [...mr.values()].map(g => ({ text: g.text, rep: g.rep, who: g.who, count: g.dates.length, oldest: g.dates.slice().sort()[0] }));
+  if (done.length) groups.push({ key: 'dn', icon: '✅', title: isToday ? 'Completed today' : 'Completed that day', color: '#1b7f52', items: done.sort((a, b) => a.doneAt - b.doneAt) });
+  const nStage = [...stg.values()].reduce((n, a) => n + a.length, 0);
+  const pend = od.length + nStage + td.length + er.length + missed.reduce((n, g) => n + g.count, 0);
+  return { kind: 'day', title: 'Day status', date, label: isToday ? 'Today' : dayShort(date), period: dayShort(date), whoLabel: sum.who === '__none' ? 'Unassigned' : sum.who,
+    stat: { done: done.length, pend, over: od.length, prog: nStage }, groups, missed };
+}
+function dayMeta(t, date) {
+  const a = [];
+  if (t.who) a.push(t.who);
+  if (t.pri) a.push(PRN[t.pri] + ' priority');
+  if (t.due) a.push((t.due < date && !t.done ? 'Overdue, due ' : 'Due ') + shortDate(t.due));
+  if (!t.done && t.date < date) a.push('since ' + shortDate(t.date) + ' (' + ageTxt(Math.max(0, dd(t.date, date))) + ')');
+  if (t.done && t.doneAt) a.push('done ' + clock(t.doneAt));
+  if (t.sec) a.push(t.sec);
+  if (t.par) a.push('sub-task of ' + t.par);
+  if (t.rid) a.push('repeats' + (t.rep && t.rep !== 'Repeated' ? ' (' + t.rep + ')' : ''));
+  if (t.depOpen) a.push('waits for ' + t.depText);
+  return a;
+}
+function dayHTML(m, inter) {
+  const sc = (c, n, l) => `<div class="stc s-${c}"><b>${n}</b>${l}</div>`;
+  const stats = `<h2 class="dayh">${esc(m.label)} <span class="cnt">${m.label === 'Today' ? esc(dayFull(m.date)) : ''}${m.whoLabel ? (m.label === 'Today' ? ' · ' : '') + esc(m.whoLabel) : ''}</span></h2><div class="dstat">${sc('done', m.stat.done, 'done')}${sc('pend', m.stat.pend, 'pending')}${m.stat.over ? sc('over', m.stat.over, 'overdue') : ''}${m.stat.prog ? sc('prog', m.stat.prog, 'in progress') : ''}</div>`;
+  const row = t => {
+    const glyph = t.done ? '☑' : '☐';
+    const cb = inter ? `<button class="cb" type="button" data-tg="${t.pid}|${t.bid}" role="checkbox" aria-checked="${t.done}" aria-label="${t.done ? 'Mark as pending' : 'Mark as completed'}">${glyph}</button>` : `<span class="cb">${glyph}</span>`;
+    const txt = inter ? `<button class="jl" type="button" data-open="${t.pid}|${t.bid}">${esc(t.text)}</button>` : `<span>${esc(t.text)}</span>`;
+    const meta = dayMeta(t, m.date).map((x, i) => (t.due && !t.done && t.due < m.date && /^Overdue/.test(x)) ? `<span class="bad">${esc(x)}</span>` : esc(x)).join(' · ');
+    const cm = t.cm ? `<div class="dm">💬 ${esc(t.cm.x.length > 90 ? t.cm.x.slice(0, 90) + '…' : t.cm.x)}</div>` : '';
+    return `<div class="drow${t.done ? ' done' : ''}">${cb}<div class="dt">${txt}${meta ? `<div class="dm">${meta}</div>` : ''}${cm}</div></div>`;
+  };
+  const cards = m.groups.map(g => `<section class="dg g-${g.key}"><h3>${g.icon} ${esc(g.title)} <small>(${g.items.length})</small></h3>${g.items.map(row).join('')}</section>`);
+  if (m.missed.length) cards.push(`<section class="dg g-mr"><h3>🔁 Missed repeats <small>(${m.missed.reduce((n, g) => n + g.count, 0)})</small></h3>${m.missed.map(g => `<div class="drow"><span class="cb">☐</span><div class="dt"><span>${esc(g.text)}</span><div class="dm">missed ${g.count} time${g.count === 1 ? '' : 's'}, oldest ${esc(shortDate(g.oldest))}${g.rep ? ' · ' + esc(g.rep) : ''}${g.who ? ' · ' + esc(g.who) : ''}</div></div></div>`).join('')}</section>`);
+  if (!cards.length) return stats + '<p class="empty">Nothing to show for this day. Add tasks in the diary and they appear here.</p>';
+  return stats + '<div class="dgs">' + cards.join('') + '</div>';
+}
+function waDay(m) {
+  const L = [`*📓 My Diary · Day status*`, `*${m.label === 'Today' ? 'Today, ' : ''}${dayShort(m.date)}*${m.whoLabel ? ' · ' + m.whoLabel : ''}`,
+    `✅ Done ${m.stat.done}  |  ⏳ Pending ${m.stat.pend}${m.stat.over ? `  |  ⚠ Overdue ${m.stat.over}` : ''}${m.stat.prog ? `  |  🔄 In progress ${m.stat.prog}` : ''}`, ''];
+  m.groups.forEach(g => {
+    L.push(`*${g.icon} ${g.title.toUpperCase()} (${g.items.length})*`);
+    g.items.forEach(t => { const mt = dayMeta(t, m.date); L.push(`• ${t.text}${mt.length ? ' — ' + mt.join(' · ') : ''}`); if (t.cm) L.push(`   💬 ${t.cm.x.length > 90 ? t.cm.x.slice(0, 90) + '…' : t.cm.x}`); });
+    L.push('');
+  });
+  if (m.missed.length) { L.push(`*🔁 MISSED REPEATS*`); m.missed.forEach(g => L.push(`• ${g.text} — missed ${g.count} time${g.count === 1 ? '' : 's'}, oldest ${shortDate(g.oldest)}`)); L.push(''); }
+  if (!m.groups.length && !m.missed.length) L.push('Nothing to report for this day.', '');
+  L.push(`_Shared from My Diary · ${dtFull(Date.now())}_`);
+  return L.join('\n');
+}
+/* ---- compact picture of the day (JPEG), made for WhatsApp: portrait, big readable text ---- */
+function dayImageCanvas(m) {
+  const W = 1080, PAD = 44, MAXR = 8, FF = '-apple-system,"Segoe UI",Roboto,"Noto Sans","Helvetica Neue",Arial,sans-serif';
+  const F = (w, z) => `${w} ${z}px ${FF}`;
+  const paint = (g, draw) => {
+    let y = 0;
+    const T = (txt, x, yy, font, col, align) => { if (!draw) return; g.font = font; g.fillStyle = col; g.textAlign = align || 'left'; g.textBaseline = 'alphabetic'; g.fillText(txt, x, yy); };
+    const R = (x, yy, w, h, r, col) => { if (!draw) return; g.fillStyle = col; g.beginPath(); g.roundRect ? g.roundRect(x, yy, w, h, r) : g.rect(x, yy, w, h); g.fill(); };
+    if (draw) { g.fillStyle = '#fdfcf9'; g.fillRect(0, 0, W, 99999); }
+    // header
+    R(0, 0, W, 210, 0, '#1c2a48');
+    T('My Diary  ·  Day status', PAD, 70, F(600, 30), '#a9b8da');
+    T(m.label === 'Today' ? 'Today' : dayShort(m.date), PAD, 142, F(700, 66), '#ffffff');
+    T((m.label === 'Today' ? dayFull(m.date) : '') + (m.whoLabel ? (m.label === 'Today' ? '  ·  ' : '') + m.whoLabel : ''), PAD, 188, F(500, 30), '#c9d4ee');
+    y = 210 + 34;
+    // stat boxes
+    const boxes = [['Done', m.stat.done, '#dff3e6', '#17623b']];
+    boxes.push(['Pending', m.stat.pend, '#fdebd2', '#8a4b00']);
+    boxes.push(['Overdue', m.stat.over, '#fde3e0', '#a32a1d']);
+    boxes.push(['In progress', m.stat.prog, '#e0ecff', '#1f4fa0']);
+    const gap = 16, bw = (W - 2 * PAD - 3 * gap) / 4;
+    boxes.forEach((b, i) => { const x = PAD + i * (bw + gap); R(x, y, bw, 124, 22, b[2]); T(String(b[1]), x + bw / 2, y + 70, F(700, 58), b[3], 'center'); T(b[0], x + bw / 2, y + 108, F(600, 25), b[3], 'center'); });
+    y += 124 + 36;
+    const maxW = W - 2 * PAD - 60;
+    const wrap = (txt, font, mw, maxLines) => {
+      if (!draw && !g.__m) g.__m = 1;
+      g.font = font; const lines = wrapText(g, txt, mw);
+      if (lines.length > maxLines) { const l = lines.slice(0, maxLines); l[maxLines - 1] = l[maxLines - 1].replace(/\s*\S*$/, '') + '…'; return l; }
+      return lines;
+    };
+    const group = (title, color, count, items, rowFn, extra) => {
+      R(PAD, y, 12, 52, 6, color);
+      T(title, PAD + 30, y + 40, F(700, 38), '#1c2a48');
+      T('(' + count + ')', PAD + 30 + (g.font = F(700, 38), g.measureText(title).width) + 14, y + 40, F(600, 32), '#7f88a0');
+      y += 52 + 14;
+      const shown = items.slice(0, MAXR);
+      shown.forEach(it => rowFn(it));
+      if (items.length > MAXR) { T(`+ ${items.length - MAXR} more`, PAD + 60, y + 34, F(600, 30), '#7f88a0'); y += 50; }
+      y += 22;
+    };
+    const taskRow = (t, g2) => {
+      const lines = wrap(t.text, F(600, 35), maxW, 3);
+      const meta = dayMeta(t, m.date).join('  ·  '), mlines = meta ? wrap(meta, F(500, 26), maxW, 2) : [];
+      const cm = t.cm ? wrap('Comment: ' + t.cm.x, F(500, 26), maxW, 2) : [];
+      const h = 22 + lines.length * 44 + mlines.length * 34 + cm.length * 34 + 16;
+      if (draw) { g.fillStyle = '#e4ebf5'; g.fillRect(PAD, y, W - 2 * PAD, 2); }
+      // checkbox
+      const bx = PAD + 4, by = y + 22;
+      R(bx, by, 38, 38, 10, t.done ? '#1b7f52' : '#ffffff');
+      if (draw) { g.strokeStyle = t.done ? '#1b7f52' : '#1c2a48'; g.lineWidth = 3; g.beginPath(); g.roundRect ? g.roundRect(bx, by, 38, 38, 10) : g.rect(bx, by, 38, 38); g.stroke();
+        if (t.done) { g.strokeStyle = '#fff'; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(bx + 9, by + 20); g.lineTo(bx + 17, by + 28); g.lineTo(bx + 30, by + 11); g.stroke(); } }
+      let yy = y + 22 + 34;
+      lines.forEach(l => { T(l, PAD + 64, yy, F(600, 35), t.done ? '#7f88a0' : '#1c2a48'); if (t.done && draw) { g.fillStyle = '#7f88a0'; g.fillRect(PAD + 64, yy - 12, g.measureText(l).width, 3); } yy += 44; });
+      mlines.forEach(l => { T(l, PAD + 64, yy - 4, F(500, 26), t.due && t.due < m.date && !t.done ? '#a32a1d' : '#6b7590'); yy += 34; });
+      cm.forEach(l => { T(l, PAD + 64, yy - 4, F(500, 26), '#3b4a73'); yy += 34; });
+      y += h;
+    };
+    m.groups.forEach(gr => group(gr.title, gr.color, gr.items.length, gr.items, taskRow));
+    if (m.missed.length) {
+      group('Missed repeats', '#7a3fb5', m.missed.reduce((n, x) => n + x.count, 0), m.missed, it => {
+        const lines = wrap(it.text, F(600, 35), maxW, 2), meta = `missed ${it.count} time${it.count === 1 ? '' : 's'}, oldest ${shortDate(it.oldest)}${it.rep ? '  ·  ' + it.rep : ''}`;
+        if (draw) { g.fillStyle = '#e4ebf5'; g.fillRect(PAD, y, W - 2 * PAD, 2); }
+        let yy = y + 22 + 34; lines.forEach(l => { T(l, PAD + 64, yy, F(600, 35), '#1c2a48'); yy += 44; });
+        T(meta, PAD + 64, yy - 4, F(500, 26), '#6b7590');
+        y += 22 + lines.length * 44 + 34 + 16;
+      });
+    }
+    if (!m.groups.length && !m.missed.length) { T('Nothing to report for this day.', W / 2, y + 60, F(600, 36), '#7f88a0', 'center'); y += 120; }
+    T('Shared from My Diary  ·  ' + dtFull(Date.now()), W / 2, y + 40, F(500, 24), '#9aa3b8', 'center');
+    y += 80;
+    return y;
+  };
+  const scratch = document.createElement('canvas').getContext('2d');
+  const H = paint(scratch, false);
+  const c = document.createElement('canvas'); c.width = W; c.height = Math.ceil(H);
+  paint(c.getContext('2d'), true);
+  return c;
+}
+function dayImageBlob() {
+  return new Promise((res, rej) => {
+    try { dayImageCanvas(buildDay(sum.day || todayISO())).toBlob(b => b ? res(b) : rej(new Error('image')), 'image/jpeg', 0.92); } catch (e) { rej(e); }
+  });
+}
+const dayFileName = () => `diary-status-${sum.day || todayISO()}.jpg`;
+$('#bImg').onclick = async () => {
+  try { const b = await dayImageBlob(); await saveFile(b, dayFileName(), 'image/jpeg'); toast('Pick WhatsApp in the share sheet to send the picture.'); }
+  catch (e) { toast('Could not make the picture on this device.'); }
+};
+$('#bJpg').onclick = async () => {
+  try { download(await dayImageBlob(), dayFileName()); toast('JPEG saved to your downloads.'); }
+  catch (e) { toast('Could not make the picture on this device.'); }
+};
+$('#bDay').onclick = () => { sum.tab = 'today'; sum.day = cur.date === todayISO() ? '' : cur.date; openSummary(); };
+
 function buildSummary() {
+  if (sum.tab === 'today') return buildDay(sum.day || todayISO());
   if (sum.tab === 'tasks') return buildTaskwise();
   if (sum.tab === 'sections') return buildSections();
   const { out, period } = gather();
@@ -2821,6 +3101,7 @@ function tasksHTML(m, inter) {
   return stats + `<section class="card"><h3>Tasks <span class="cnt">· tap a task to see each date</span></h3><div class="tw"><table class="jt">${head}<tbody>${body}</tbody></table></div></section><p class="hint">Planned = all times the task is due in the period. Completed of Planned shows how many were done.</p>`;
 }
 function bodyHTML(m, inter) {
+  if (m.kind === 'day') return dayHTML(m, inter);
   if (m.kind === 'tasks') return tasksHTML(m, inter);
   if (m.kind === 'sections') {
     const st = `<div class="sumstats"><div class="stat"><b>${m.stat.done}</b> completed</div><div class="stat"><b>${m.stat.pend}</b> pending</div>${m.stat.over ? `<div class="stat"><b>${m.stat.over}</b> overdue</div>` : ''}<div class="stat"><b>${m.groups.length}</b> section${m.groups.length === 1 ? '' : 's'}</div><div class="stat per">${esc(m.period)}${m.whoLabel ? ' · ' + esc(m.whoLabel) : ''}</div></div>`;
@@ -2857,6 +3138,7 @@ function waTasks(m) {
   return L.join('\n');
 }
 function waText(m) {
+  if (m.kind === 'day') return waDay(m);
   if (m.kind === 'tasks') return waTasks(m);
   const item = (t, i) => {
     const a = [`${i + 1}. *${t.text}*`];
@@ -2891,12 +3173,20 @@ function waText(m) {
   L.push(`_Shared from My Diary · ${dtFull(Date.now())}_`);
   return L.join('\n');
 }
-const SHARE_CSS = '.bdg.pr{background:#e0ecff;color:#1f4fa0}.bdg.hi{background:#fde3e0;color:#a32a1d}.bdg.md{background:#fdebd2;color:#8a4b00}.bdg.lo{background:#e6eaf3;color:#44506b}.late{display:block;color:#c0392b;font-weight:700;font-size:12px}.cmd{display:block;color:#6b7590;font-size:12px}.rp{color:#2547a6;font-weight:600}.bar{height:8px;border-radius:4px;background:#dde5f0;overflow:hidden;min-width:70px}.bar i{display:block;height:100%;background:#2547a6}body{margin:0;background:#e9ecea;color:#1c2a48;font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}main{max-width:1100px;margin:0 auto;padding:18px 14px 40px}h1{font:700 30px Georgia,serif;margin:0}.sub{color:#6b7590;margin:4px 0 14px}.sumstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.stat{background:#fff;border-radius:14px;padding:10px 14px}.stat b{font:700 20px Georgia,serif}.stat.per{color:#6b7590}.days{display:grid;gap:14px}.card{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.12);margin-bottom:14px}.card h3{margin:0;font:700 20px Georgia,serif}.cnt{font-size:14px;color:#6b7590;font-weight:500}.tw{overflow-x:auto;margin-top:8px}table{width:100%;border-collapse:collapse;font-size:15px}th{text-align:left;font-size:13px;color:#6b7590;padding:8px 10px;border-bottom:2px solid #dde5f0;white-space:nowrap}td{padding:10px;border-bottom:1px solid #dde5f0;vertical-align:top}td.dsc{font:17px/1.35 Georgia,serif;min-width:180px}td small{display:block;color:#6b7590;font-size:12px}tr.done td.dsc span{text-decoration:line-through;color:#6b7590}.num{text-align:center}tr.old td.num{color:#c0392b;font-weight:700}.bdg{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:600}.bdg.ok{background:#dff3e6;color:#17623b}.bdg.pe{background:#fdebd2;color:#8a4b00}.empty,.foot,.hint{color:#6b7590;font-size:14px}@media(max-width:760px){table,tbody,tr,td{display:block}thead{display:none}tr{padding:8px 0;border-bottom:1px solid #dde5f0}td{border:0;padding:2px 4px}td[data-l]:not(.dsc)::before{content:attr(data-l) ": ";color:#6b7590;font-size:12px;font-weight:600}.num{text-align:left}}';
+const SHARE_CSS = '.dayh{font:700 22px Georgia,serif;margin:0 0 10px}.dstat{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.stc{padding:8px 14px;border-radius:14px;font-weight:600}.stc b{font:700 22px Georgia,serif;margin-right:4px}.s-done{background:#dff3e6;color:#17623b}.s-pend{background:#fdebd2;color:#8a4b00}.s-over{background:#fde3e0;color:#a32a1d}.s-prog{background:#e0ecff;color:#1f4fa0}.dgs{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr))}.dg{background:#fff;border-radius:16px;padding:10px 14px 6px;box-shadow:0 1px 3px rgba(0,0,0,.12);border-left:6px solid #2547a6}.dg h3{margin:0 0 4px;font-size:16px}.drow{display:flex;gap:8px;padding:7px 0;border-top:1px solid #dde5f0}.drow .cb{width:26px;font-size:22px}.dt{flex:1;font:16px/1.3 Georgia,serif}.dm{font:12px/1.45 sans-serif;color:#6b7590;margin-top:2px}.dm .bad{color:#c0392b;font-weight:700}.drow.done .dt>span:first-child{text-decoration:line-through;color:#6b7590}.g-od{border-left-color:#d64545}.g-td{border-left-color:#e39a1d}.g-st{border-left-color:#3b6fd6}.g-dn{border-left-color:#1b7f52}.g-mr{border-left-color:#7a3fb5}.g-er{border-left-color:#8a6d3b}.bdg.pr{background:#e0ecff;color:#1f4fa0}.bdg.hi{background:#fde3e0;color:#a32a1d}.bdg.md{background:#fdebd2;color:#8a4b00}.bdg.lo{background:#e6eaf3;color:#44506b}.late{display:block;color:#c0392b;font-weight:700;font-size:12px}.cmd{display:block;color:#6b7590;font-size:12px}.rp{color:#2547a6;font-weight:600}.bar{height:8px;border-radius:4px;background:#dde5f0;overflow:hidden;min-width:70px}.bar i{display:block;height:100%;background:#2547a6}body{margin:0;background:#e9ecea;color:#1c2a48;font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}main{max-width:1100px;margin:0 auto;padding:18px 14px 40px}h1{font:700 30px Georgia,serif;margin:0}.sub{color:#6b7590;margin:4px 0 14px}.sumstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.stat{background:#fff;border-radius:14px;padding:10px 14px}.stat b{font:700 20px Georgia,serif}.stat.per{color:#6b7590}.days{display:grid;gap:14px}.card{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.12);margin-bottom:14px}.card h3{margin:0;font:700 20px Georgia,serif}.cnt{font-size:14px;color:#6b7590;font-weight:500}.tw{overflow-x:auto;margin-top:8px}table{width:100%;border-collapse:collapse;font-size:15px}th{text-align:left;font-size:13px;color:#6b7590;padding:8px 10px;border-bottom:2px solid #dde5f0;white-space:nowrap}td{padding:10px;border-bottom:1px solid #dde5f0;vertical-align:top}td.dsc{font:17px/1.35 Georgia,serif;min-width:180px}td small{display:block;color:#6b7590;font-size:12px}tr.done td.dsc span{text-decoration:line-through;color:#6b7590}.num{text-align:center}tr.old td.num{color:#c0392b;font-weight:700}.bdg{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:600}.bdg.ok{background:#dff3e6;color:#17623b}.bdg.pe{background:#fdebd2;color:#8a4b00}.empty,.foot,.hint{color:#6b7590;font-size:14px}@media(max-width:760px){table,tbody,tr,td{display:block}thead{display:none}tr{padding:8px 0;border-bottom:1px solid #dde5f0}td{border:0;padding:2px 4px}td[data-l]:not(.dsc)::before{content:attr(data-l) ": ";color:#6b7590;font-size:12px;font-weight:600}.num{text-align:left}}';
 function htmlOf(m) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(m.title)} · My Diary</title><style>${SHARE_CSS}</style></head><body><main><h1>📓 My Diary</h1><p class="sub">${esc(m.title)}</p>${bodyHTML(m, false)}<p class="foot">Shared from My Diary · ${esc(dtFull(Date.now()))}</p></main></body></html>`;
 }
 function renderSumFilters() {
   document.querySelectorAll('#sTabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === sum.tab)));
+  $('#bImg').hidden = $('#bJpg').hidden = sum.tab !== 'today';
+  if (sum.tab === 'today') {
+    const d = sum.day || todayISO(), names = knownNames();
+    $('#sumfilters').innerHTML = `<span class="seg"><button type="button" data-dn="-1" aria-label="Previous day">‹</button><button type="button" data-dn="0" aria-pressed="${d === todayISO()}">Today</button><button type="button" data-dn="1" aria-label="Next day">›</button></span>
+      <label class="dl">Date <input type="date" id="fDay" value="${esc(d)}"></label>
+      <select class="selx" id="fWho" aria-label="Responsibility"><option value="">All people</option><option value="__none"${sum.who === '__none' ? ' selected' : ''}>Unassigned</option>${names.map(n => `<option value="${esc(n)}"${sum.who === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`;
+    return;
+  }
   if (sum.tab === 'tasks') {
     const ys = new Set([String(new Date().getFullYear()), String(new Date().getFullYear() + 1)]);
     pages.forEach(pg => ys.add(pg.date.slice(0, 4))); rules.forEach(r => { ys.add(r.start.slice(0, 4)); });
@@ -2947,6 +3237,8 @@ $('#sTabs').addEventListener('click', e => {
   sum.tab = b.dataset.t; renderSumFilters(); renderSumBody();
 });
 $('#sumfilters').addEventListener('click', e => {
+  const dn = e.target.closest('[data-dn]');
+  if (dn) { const k = +dn.dataset.dn; sum.day = k === 0 ? '' : addDays(sum.day || todayISO(), k); renderSumFilters(); renderSumBody(); return; }
   if (e.target.closest('#fEarly')) { sum.early = !sum.early; renderSumFilters(); renderSumBody(); return; }
   const f = e.target.closest('[data-f]');
   if (f) { sum.filter = f.dataset.f; renderSumFilters(); renderSumBody(); return; }
@@ -2962,6 +3254,7 @@ $('#sumfilters').addEventListener('input', e => {
   else if (e.target.id === 'fFrom') sum.from = e.target.value;
   else if (e.target.id === 'fTo') sum.to = e.target.value;
   else if (e.target.id === 'fWho') sum.who = e.target.value;
+  else if (e.target.id === 'fDay') { if (/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) sum.day = e.target.value === todayISO() ? '' : e.target.value; }
   else if (e.target.id === 'fYear') sum.year = e.target.value;
   else if (e.target.id === 'fSec') sum.sec = e.target.value;
   else if (e.target.id === 'fPri') sum.pri = e.target.value;
@@ -3027,7 +3320,11 @@ async function sharePage() {
 const csvCell = v => { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
 function csvOf(m) {
   let head, rows = [];
-  if (m.kind === 'tasks') {
+  if (m.kind === 'day') {
+    head = ['Group', 'Job description', 'Responsibility', 'Priority', 'Due date', 'Stage', 'Section', 'Added date', 'Completion date', 'Latest comment'];
+    m.groups.forEach(g => g.items.forEach(t => rows.push([g.title, t.text, t.who, t.pri ? PRN[t.pri] : '', t.due ? dayFull(t.due) : '', t.st, t.sec, t.added, t.done ? t.doneTxt : '', t.cm ? t.cm.x : ''])));
+    m.missed.forEach(g => rows.push(['Missed repeats', g.text, g.who, '', '', '', '', 'oldest ' + dayFull(g.oldest), '', `missed ${g.count} time(s)`]));
+  } else if (m.kind === 'tasks') {
     head = ['Task', 'Repeat', 'Responsibility', 'Due date', 'Status', 'Completion date', 'Pending days'];
     m.groups.forEach(g => g.detail.slice().reverse().forEach(d => rows.push([g.name, g.rule ? ruleDesc(g.rule) : '', g.who, dayFull(d.date), d.status, d.doneTxt === '-' ? '' : d.doneTxt, d.days == null ? '' : d.days])));
   } else {
