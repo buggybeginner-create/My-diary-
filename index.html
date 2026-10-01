@@ -370,6 +370,39 @@ body.tplview #toolbar,body.tplview #penbar,body.tplview #desk,body.tplview #pad,
 .tpreview li.sec{font-weight:700;color:var(--accent);list-style:none;margin-left:-20px;margin-top:6px}
 .tpreview small{color:var(--muted);font:13px var(--sans)}
 
+/* ---------- missed repeats (kept apart from one-time pending) ---------- */
+.carryrep{margin-top:10px}
+.cg{padding:10px 0;border-top:1px solid var(--line)}
+.cgh{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+.cgh .cm{flex:1;min-width:180px}
+.cgh .cm b{font:700 16px var(--serif)}
+
+/* ---------- pen tools: highlighter, lasso, shapes ---------- */
+#lassoBar{position:absolute;z-index:12;display:flex;gap:6px;background:var(--paper);border-radius:14px;box-shadow:var(--shadow),0 0 0 1px var(--line);padding:6px}
+#lassoBar button{min-height:44px;padding:0 12px;border:0;border-radius:10px;background:var(--btn);font:600 14px var(--sans);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);white-space:nowrap}
+body[data-tool="lasso"] #colors,body[data-tool="eraser"] #colors{display:none}
+body[data-tool="lasso"] #sizes{display:none}
+
+/* ---------- text style bar, links, sub-tasks, dependencies ---------- */
+#fmtbar{display:none;position:absolute;left:0;right:0;top:100%;z-index:31;gap:6px 8px;flex-wrap:wrap;align-items:center;justify-content:center;padding:8px 12px;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 8px 16px rgba(0,0,0,.14)}
+body.fmt #fmtbar{display:flex}
+body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
+.fmtb{min-width:42px;height:42px;padding:0 12px;border:0;border-radius:12px;background:var(--btn);font:600 15px var(--sans);box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.fmtb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+#fmtbar .fsel{height:42px}
+#fmtbar .sw{width:34px;height:34px}
+#fmtbar .sw i{width:20px;height:20px}
+.textblk{display:flex;align-items:flex-start;gap:6px}
+.lkb{flex:none;align-self:flex-start;width:36px;height:34px;border:0;border-radius:10px;background:transparent;font-size:17px;padding:0;color:var(--accent)}
+.lkb[hidden]{display:none}
+.lkb:hover,.lkb:active{background:var(--accent-soft)}
+.prog{background:var(--btn);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);max-width:70px}
+.dep{background:#ece3fb;color:#5a2fa0;max-width:180px}
+:root[data-theme="dark"] .dep{background:#3a2a5a;color:#d3bcff}
+.task.sub{box-shadow:inset 2px 0 0 var(--line)}
+.task:not(.sub) [data-act="outdent"]{display:none}
+@media (max-width:760px){.prog,.dep{display:none}.task.sel .prog:not(:empty),.task.sel .dep:not(:empty){display:block}}
+
 /* ---------- tablets & phones ---------- */
 @media (max-width:900px){
   .tb .lbl{display:none}
@@ -435,11 +468,20 @@ body.tplview #toolbar,body.tplview #penbar,body.tplview #desk,body.tplview #pad,
     <button class="btn" id="bCsv" type="button">📑 Excel/CSV</button>
     <button class="btn" id="bPdf" type="button">🖨️ PDF</button>
   </div>
+  <div id="fmtbar" role="toolbar" aria-label="Text style">
+    <select id="fmFont" class="fsel" aria-label="Font"><option value="">Font: default</option><option value="serif">Serif</option><option value="sans">Clean sans</option><option value="hand">Handwriting style</option><option value="mono">Typewriter</option></select>
+    <button class="fmtb" id="fmSm" type="button" aria-label="Smaller text">A−</button><span class="pl" id="fmSz">20</span><button class="fmtb" id="fmLg" type="button" aria-label="Bigger text">A+</button>
+    <button class="fmtb" id="fmB" type="button" aria-label="Bold"><b>B</b></button><button class="fmtb" id="fmI" type="button" aria-label="Italic"><i>I</i></button>
+    <span class="grp" id="fmCol" role="group" aria-label="Text colour"></span>
+    <button class="fmtb" id="fmLink" type="button">🔗 Link</button><button class="fmtb" id="fmClr" type="button">Reset style</button>
+  </div>
   <div id="penbar">
-    <span class="seg" id="penmode" role="group" aria-label="Pen type"><button type="button" data-pm="ink">✍️ Handwriting</button><button type="button" data-pm="text">🔤 Convert to text</button></span>
+    <span class="seg" id="penmode" role="group" aria-label="What the pen does"><button type="button" data-pm="text">🔤 Pen writes text</button><button type="button" data-pm="ink">✍️ Pen draws</button></span>
+    <span class="seg" id="tools" role="group" aria-label="Tool"><button type="button" data-tl="pen">✍️ Pen</button><button type="button" data-tl="hl">🖍️ Highlight</button><button type="button" data-tl="lasso">⭕ Select</button><button type="button" data-tl="eraser">🧽 Erase</button></span>
     <span class="pl" id="penlabel">Pen</span>
     <span class="grp" id="colors" role="group" aria-label="Ink colour"></span>
     <span class="grp" id="sizes" role="group" aria-label="Size"></span>
+    <button class="chipb" id="bShapes" type="button"></button>
     <button class="chipb" id="bFinger" type="button"></button>
     <button class="chipb" id="bClear" type="button">🗑️ Clear handwriting</button>
   </div>
@@ -475,6 +517,7 @@ body.tplview #toolbar,body.tplview #penbar,body.tplview #desk,body.tplview #pad,
       </section>
     </div>
     <canvas id="ink" aria-label="Handwriting layer"></canvas>
+    <div id="lassoBar" hidden><button type="button" data-ls="text">🔤 To text</button><button type="button" data-ls="task">☑️ To tasks</button><button type="button" data-ls="dup">⧉ Copy</button><button type="button" data-ls="del">🗑️ Delete</button><button type="button" data-ls="x">✕</button></div>
   </article>
   <button class="btn" id="bSpace" type="button">＋ Add writing space</button>
 </main>
@@ -490,6 +533,8 @@ body.tplview #toolbar,body.tplview #penbar,body.tplview #desk,body.tplview #pad,
   <div class="padcard">
     <div class="padtop">
       <b>Write here</b>
+      <span class="seg" id="padAs" role="group" aria-label="Add as"><button type="button" data-as="text">Text</button><button type="button" data-as="task">Task</button></span>
+      <button class="chipb" id="padAuto" type="button"></button>
       <span class="sp"></span>
       <select id="recLang" aria-label="Handwriting language">
         <option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option>
@@ -497,7 +542,7 @@ body.tplview #toolbar,body.tplview #penbar,body.tplview #desk,body.tplview #pad,
       </select>
       <button class="ic" id="padX" type="button" aria-label="Close handwriting box" title="Close">✕</button>
     </div>
-    <div class="padwrap"><canvas id="padCv"></canvas><div class="padline"></div><div class="padhint" id="padHint">Write a line or two with your Pencil</div></div>
+    <div class="padwrap"><canvas id="padCv"></canvas><div class="padline"></div><div class="padhint" id="padHint">Write one line with your Pencil. It is added to the page by itself.</div></div>
     <textarea id="recText" rows="2" placeholder="Recognised text appears here. You can edit it."></textarea>
     <div class="padstat" id="recStatus" aria-live="polite"></div>
     <div class="padbtns">
@@ -543,16 +588,20 @@ const animOK = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matc
    ===================================================================== */
 const SKEY = 'paper-diary-settings-v1';
 const COLORS = ['auto', 'blue', 'red', 'green'];
+const HL_COLORS = ['hy', 'hg', 'hp', 'hb'];
+const ALLC = COLORS.concat(HL_COLORS);
+const HL_SIZES = [12, 20, 32];
 const SIZES = [2.4, 3.8, 6.5];      // pen widths in page units (page is 1000 units wide)
 const ERAS = [14, 24, 42];          // eraser radii in page units
-const S = Object.assign({ statuses: ['In progress', 'Waiting for parts', 'Waiting for approval', 'On hold'], notify: false, theme: null, fingerDraw: true, fingerSet: false, color: 'auto', size: 1, penMode: 'ink', carryHidden: false, lang: 'en', onlineOK: false, autoSave: true, autoBackup: true, lastBackup: 0, hadData: false }, (() => {
+const S = Object.assign({ statuses: ['In progress', 'Waiting for parts', 'Waiting for approval', 'On hold'], notify: false, theme: null, fingerDraw: true, fingerSet: false, color: 'auto', size: 1, penMode: 'text', hlColor: 'hy', shapes: true, padAuto: true, padAs: 'text', penv: 0, carryHidden: false, lang: 'en', onlineOK: false, autoSave: true, autoBackup: true, lastBackup: 0, hadData: false }, (() => {
   try { return JSON.parse(localStorage.getItem(SKEY)) || {}; } catch (e) { return {}; }
 })());
 const saveSettings = () => { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} };
+if ((S.penv || 0) < 2) { S.penv = 2; S.penMode = 'text'; saveSettings(); }   // the pen now writes text by default
 
 const PAL = {
-  light: { auto: '#1c2a48', blue: '#2446c8', red: '#c42b2b', green: '#1b7f52' },
-  dark:  { auto: '#ece9e2', blue: '#7c9bff', red: '#ff7d7d', green: '#5fd79b' }
+  light: { auto: '#1c2a48', blue: '#2446c8', red: '#c42b2b', green: '#1b7f52', orange: '#c25e00', purple: '#7a3fb5', hy: '#ffd200', hg: '#3ddc5a', hp: '#ff5fa8', hb: '#3fb2ff' },
+  dark:  { auto: '#ece9e2', blue: '#7c9bff', red: '#ff7d7d', green: '#5fd79b', orange: '#ffb366', purple: '#c9a0ff', hy: '#ffd200', hg: '#3ddc5a', hp: '#ff5fa8', hb: '#3fb2ff' }
 };
 const themeName = () => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 const inkColor = k => (PAL[themeName()][k] || PAL.light.auto);
@@ -614,6 +663,21 @@ const pagesOn = date => [...pages.values()].filter(p => p.date === date).sort((a
 const getBlock = id => cur && cur.blocks.find(b => b.id === id);
 const isBlank = p => !p.strokes.length && p.blocks.every(b => b.type === 'text' && !b.text.trim());
 
+const FONTS = {
+  serif: '"Iowan Old Style","Palatino Linotype",Palatino,"New York",ui-serif,Georgia,serif',
+  sans: '-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif',
+  hand: '"Bradley Hand","Segoe Print","Chalkboard SE","Marker Felt","Comic Sans MS",cursive',
+  mono: 'ui-monospace,"SF Mono",Menlo,Consolas,monospace'
+};
+const TCOLS = ['auto', 'blue', 'red', 'green', 'orange', 'purple'];
+function fmtFields(b, o) {
+  if (FONTS[b.fs]) o.fs = b.fs;
+  const z = Number(b.fz); if (z >= 12 && z <= 40) o.fz = Math.round(z);
+  if (b.fb) o.fb = true; if (b.fi) o.fi = true;
+  if (TCOLS.includes(b.fc) && b.fc !== 'auto') o.fc = b.fc;
+  if (typeof b.lk === 'string' && b.lk.trim()) o.lk = b.lk.trim().slice(0, 500);
+  return o;
+}
 function sanitizePage(p) {
   if (!p || typeof p !== 'object' || typeof p.id !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(p.date || '')) return null;
   const seen = new Set();
@@ -634,9 +698,11 @@ function sanitizePage(p) {
       if (Number(b.rem)) { o.rem = Number(b.rem); if (b.remOk) o.remOk = true; }
       if (/^\d{4}-\d{2}-\d{2}$/.test(b.from || '')) o.from = b.from;
       if (Array.isArray(b.cm)) { const cm = b.cm.map(c => c && { t: Number(c.t) || Date.now(), x: String(c.x || '').slice(0, 500) }).filter(c => c && c.x.trim()).slice(-50); if (cm.length) o.cm = cm; }
-      blocks.push(o);
-    } else if (b.type === 'section') blocks.push({ id, type: 'section', text: String(b.text == null ? '' : b.text).slice(0, 120) });
-    else blocks.push({ id, type: 'text', text: String(b.text == null ? '' : b.text) });
+      const lvn = parseInt(b.lv, 10); if (lvn > 0) o.lv = Math.min(2, lvn);
+      if (typeof b.dep === 'string' && b.dep) o.dep = b.dep.slice(0, 40);
+      blocks.push(fmtFields(b, o));
+    } else if (b.type === 'section') blocks.push(fmtFields(b, { id, type: 'section', text: String(b.text == null ? '' : b.text).slice(0, 120) }));
+    else blocks.push(fmtFields(b, { id, type: 'text', text: String(b.text == null ? '' : b.text) }));
   });
   const strokes = [];
   (Array.isArray(p.strokes) ? p.strokes : []).forEach(s => {
@@ -644,7 +710,7 @@ function sanitizePage(p) {
     let pts = s.p.map(Number).filter(Number.isFinite);
     if (pts.length % 2) pts = pts.slice(0, -1);
     if (pts.length < 2) return;
-    strokes.push({ c: COLORS.includes(s.c) ? s.c : 'auto', w: clamp(Number(s.w) || 3.8, 0.5, 30), p: pts });
+    strokes.push(Object.assign({ c: ALLC.includes(s.c) ? s.c : 'auto', w: clamp(Number(s.w) || 3.8, 0.5, 40), p: pts }, s.hl ? { hl: true } : {}, s.poly ? { poly: true } : {}));
   });
   return { id: p.id, date: p.date, created: Number(p.created) || Date.now(), updated: Number(p.updated) || Date.now(),
     h: clamp(Number(p.h) || 1500, 800, 6000), blocks, strokes };
@@ -952,6 +1018,7 @@ function onEdit() {
   updateUndoUI();
 }
 function restore(s) {
+  if (typeof clearLasso === 'function') clearLasso();
   cur.blocks = JSON.parse(s.blocks); cur.strokes = s.strokes.slice(); cur.h = s.h;
   renderBlocks(true); applySize(true); touch(); updateUndoUI();
 }
@@ -981,6 +1048,62 @@ function autosize(ta) {
 const autosizeAll = () => elMap.forEach(el => { const ta = el.querySelector('textarea'); if (ta) autosize(ta); });
 
 let secOf = new Map(), selId = null;
+let parentOf = new Map(), progOf = new Map();
+/* sub-task structure of a list of blocks: which task is the parent, and how many children are done */
+function subMaps(blocks) {
+  const parent = new Map(), prog = new Map(); let stack = [];
+  blocks.forEach(b => {
+    if (b.type === 'section') { stack = []; return; }
+    if (b.type !== 'task') return;
+    const lv = b.lv || 0;
+    while (stack.length && (stack[stack.length - 1].lv || 0) >= lv) stack.pop();
+    if (stack.length && lv > 0) {
+      const par = stack[stack.length - 1]; parent.set(b.id, par);
+      const pr = prog.get(par.id) || { d: 0, t: 0 }; pr.t++; if (b.done) pr.d++; prog.set(par.id, pr);
+    }
+    stack.push(b);
+  });
+  return { parentOf: parent, progOf: prog };
+}
+function kidIds(id) {
+  const i = cur.blocks.findIndex(b => b.id === id); if (i < 0) return [];
+  const lv = cur.blocks[i].lv || 0, out = [];
+  for (let j = i + 1; j < cur.blocks.length; j++) {
+    const x = cur.blocks[j];
+    if (x.type === 'section') break;
+    if (x.type !== 'task') continue;
+    if ((x.lv || 0) > lv) out.push(x.id); else break;
+  }
+  return out;
+}
+function fixLevels() {
+  let prev = -1;
+  cur.blocks.forEach(b => {
+    if (b.type === 'section') { prev = -1; return; }
+    if (b.type !== 'task') return;
+    let lv = Math.min(b.lv || 0, prev + 1, 2); if (lv < 0) lv = 0;
+    if (lv) b.lv = lv; else delete b.lv;
+    prev = lv;
+  });
+}
+const URL_RE = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
+function linkOf(b) {
+  let u = b.lk || ''; if (!u) { const m = URL_RE.exec(b.text || ''); u = m ? m[1] : ''; }
+  if (!u) return '';
+  return /^[a-z][a-z0-9+.-]*:/i.test(u) ? u : 'https://' + u;
+}
+function findBlockById(id) {
+  for (const p of pages.values()) for (const b of p.blocks) if (b.id === id) return { p, b };
+  return null;
+}
+function applyFmt(el, b) {
+  const st = el.querySelector('textarea').style;
+  st.fontFamily = FONTS[b.fs] || ''; st.fontSize = b.fz ? b.fz + 'px' : '';
+  st.fontWeight = b.fb ? '700' : ''; st.fontStyle = b.fi ? 'italic' : '';
+  st.color = b.lk ? 'var(--accent)' : (b.fc ? inkColor(b.fc) : '');
+  st.textDecorationLine = b.lk && !b.done ? 'underline' : '';
+  const lb = el.querySelector('.lkb'); if (lb) { const u = linkOf(b); lb.hidden = !u; lb.title = u ? 'Open link: ' + u : ''; }
+}
 function makeBlockEl(b) {
   const el = document.createElement('div');
   el.dataset.id = b.id;
@@ -989,29 +1112,34 @@ function makeBlockEl(b) {
     el.innerHTML =
       '<button class="chk" type="button" role="checkbox" data-act="toggle"><svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true"><rect class="box" x="2" y="2" width="22" height="22" rx="7"/><path class="tick" d="M7.5 13.4l3.8 3.8 7.2-7.6"/></svg></button>' +
       '<textarea class="tt" rows="1" readonly data-x="1" aria-label="Task (tap the row for actions)" placeholder="New task"></textarea>' +
+      '<span class="chipx prog" title="Sub-tasks done"></span>' +
+      '<button class="chipx dep" type="button" data-act="details" aria-label="Waits for another task"></button>' +
       '<button class="chipx stt" type="button" data-act="details" aria-label="Stage"></button>' +
       '<button class="chipx due" type="button" data-act="details" aria-label="Due date"></button>' +
       '<button class="rep" type="button" data-act="repeat" aria-label="Repeat settings"><span>🔁</span><span class="rt"> Repeated</span></button>' +
       '<button class="who" type="button" data-act="who" aria-label="Assignee"></button>' +
       '<span class="tsec" aria-hidden="true"></span>' +
+      '<button class="lkb" type="button" data-act="openlink" hidden aria-label="Open link">🔗</button>' +
       '<button class="cmt" type="button" data-act="comment" aria-label="Comments">💬<b></b></button>' +
       '<div class="tbar" role="toolbar" aria-label="Task actions">' +
       '<button type="button" data-act="edit">✎ Edit</button><button type="button" data-act="repeat">🔁 Repeat</button>' +
+      '<button type="button" data-act="indent">⇥ Sub-task</button><button type="button" data-act="outdent">⇤ Promote</button>' +
       '<button type="button" class="tdel" data-act="del">🗑️ Delete</button><button type="button" data-act="details">⚙ Details</button>' +
-      '<button type="button" class="dh" data-drag="1" aria-label="Drag to move up or down" title="Drag to move">⠿ Move</button></div>';
+      '<button type="button" class="dh" data-drag="1" aria-label="Drag up or down to move, sideways to make a sub-task" title="Drag to move">⠿ Move</button></div>';
   } else if (b.type === 'section') {
     el.className = 'blk secblk';
     el.innerHTML = '<textarea class="sx" rows="1" data-x="1" aria-label="Section heading" placeholder="Section heading, e.g. Electrical"></textarea>' +
       '<button class="ic" type="button" data-act="del" aria-label="Remove section heading" title="Remove heading">✕</button>';
   } else {
     el.className = 'blk textblk';
-    el.innerHTML = '<textarea class="tx" rows="1" data-x="1" aria-label="Diary text"></textarea>';
+    el.innerHTML = '<textarea class="tx" rows="1" data-x="1" aria-label="Diary text"></textarea><button class="lkb" type="button" data-act="openlink" hidden aria-label="Open link">🔗</button>';
   }
   return el;
 }
 function syncBlockEl(el, b) {
   const ta = el.querySelector('textarea');
   if (ta.value !== b.text) ta.value = b.text;
+  applyFmt(el, b);
   if (b.type !== 'task') return;
   const done = !!b.done, today = isoOf(new Date());
   el.classList.toggle('done', done);
@@ -1033,7 +1161,12 @@ function syncBlockEl(el, b) {
   cb.classList.toggle('has', cm.length > 0);
   cb.querySelector('b').textContent = cm.length || '';
   cb.title = cm.length ? 'Latest comment: ' + cm[cm.length - 1].x : 'Add a comment';
-  el.querySelector('.tsec').textContent = secOf.get(b.id) || '';
+  const lv = b.lv || 0, par = parentOf.get(b.id), pg = progOf.get(b.id);
+  el.style.marginLeft = lv * 26 + 'px'; el.classList.toggle('sub', lv > 0);
+  el.querySelector('.prog').textContent = pg ? `${pg.d}/${pg.t}` : '';
+  el.querySelector('.tsec').textContent = par ? '↳ ' + par.text.trim().slice(0, 20) : (secOf.get(b.id) || '');
+  const dp = b.dep && findBlockById(b.dep), dc = el.querySelector('.dep');
+  dc.textContent = dp && !dp.b.done && !done ? '⛓ After: ' + dp.b.text.trim().slice(0, 22) : '';
 }
 function leave(el) {
   el.style.overflow = 'hidden';
@@ -1050,6 +1183,7 @@ function renderBlocks(animate = true) {
 
   secOf = new Map(); let curSec = '';
   cur.blocks.forEach(b => { if (b.type === 'section') curSec = b.text.trim(); else if (b.type === 'task') secOf.set(b.id, curSec); });
+  { const sm = subMaps(cur.blocks); parentOf = sm.parentOf; progOf = sm.progOf; }
   const act = [], don = [];
   cur.blocks.forEach(b => (b.type === 'task' && b.done ? don : act).push(b));
   don.sort((a, b) => (a.doneAt || 0) - (b.doneAt || 0));
@@ -1101,7 +1235,7 @@ function setSel(id) {
   const el = id && elMap.get(id);
   if (!el) { selId = null; return; }
   el.classList.add('sel');
-  if (id) lastFocusId = id;
+  if (id) { lastFocusId = id; showFmt(id); }
   const bar = el.querySelector('.tbar');
   if (bar) {
     bar.classList.remove('up');
@@ -1154,6 +1288,7 @@ function newTaskAfter(id) {
   begin();
   const i = cur.blocks.findIndex(b => b.id === id);
   const t = { id: uid(), type: 'task', text: '', done: false, at: Date.now() };
+  if (cur.blocks[i] && cur.blocks[i].lv) t.lv = cur.blocks[i].lv;
   cur.blocks.splice(i + 1, 0, t);
   ensureTrailing(); renderBlocks(true); commit(); focusBlock(t.id);
 }
@@ -1186,10 +1321,34 @@ function toggleTask(id) {
   if (!b || b.type !== 'task') return;
   b.done = !b.done;
   if (b.done) b.doneAt = Date.now(); else delete b.doneAt;
+  let kidsDone = 0, warn = '', allKids = null;
+  if (b.done) {
+    kidIds(id).forEach(kid => { const kb = getBlock(kid); if (kb && !kb.done) { kb.done = true; kb.doneAt = Date.now(); kidsDone++; } });
+    const dp = b.dep && findBlockById(b.dep); if (dp && !dp.b.done) warn = dp.b.text.trim();
+    const sm = subMaps(cur.blocks), par = sm.parentOf.get(id), pr = par && sm.progOf.get(par.id);
+    if (par && !par.done && pr && pr.d === pr.t) allKids = par.id;
+  }
   if (row) syncBlockEl(row, b);           // instant visual: tick + strike-through
+  if (kidsDone) { const sm = subMaps(cur.blocks); parentOf = sm.parentOf; progOf = sm.progOf; kidIds(id).forEach(kid => { const e2 = elMap.get(kid), kb = getBlock(kid); if (e2 && kb) syncBlockEl(e2, kb); }); }
   commit();
   clearTimeout(moveTimers[id]);
   moveTimers[id] = setTimeout(() => renderBlocks(true), b.done ? 460 : 240);   // then glide to/from Completed
+  if (kidsDone) toast(`${kidsDone} sub-task${kidsDone === 1 ? '' : 's'} completed too.`);
+  else if (warn) toast(`Done. Note: it was waiting for "${warn}", which is not done yet.`);
+  else if (allKids) toast('All sub-tasks are done.', 'Complete the main task', () => toggleTask(allKids));
+}
+function indentTask(id, delta) {
+  begin();
+  const b = getBlock(id); if (!b || b.type !== 'task') return;
+  const old = b.lv || 0, group = [id].concat(kidIds(id));
+  const i = cur.blocks.findIndex(x => x.id === id);
+  let prevLv = -1; for (let j = i - 1; j >= 0; j--) { const x = cur.blocks[j]; if (x.type === 'section') break; if (x.type === 'task') { prevLv = x.lv || 0; break; } }
+  const nl = clamp(old + delta, 0, Math.min(2, prevLv + 1));
+  if (nl === old) { toast(delta > 0 ? 'A sub-task needs a task above it to belong to.' : 'It is already a main task.'); return; }
+  const d = nl - old;
+  group.forEach(g => { const gb = getBlock(g); const v = clamp((gb.lv || 0) + d, 0, 2); if (v) gb.lv = v; else delete gb.lv; });
+  fixLevels(); renderBlocks(true); commit();
+  toast(delta > 0 ? 'Made a sub-task' : 'Now a main task');
 }
 function deleteBlock(id) {
   begin();
@@ -1381,6 +1540,8 @@ function openDetails(id, pidIn) {
       <div class="rgrid"><input id="dStNew" class="qin sm" type="text" maxlength="40" placeholder="New stage, e.g. Waiting for vendor" style="width:min(100%,260px)"><button class="btn" type="button" data-sta="1">＋ Add stage</button></div></div>
     <div class="fld"><span class="dl">Due date</span><div class="rgrid"><input id="dDue" class="qin sm" type="date" style="width:170px">
       <button class="chip nm" type="button" data-dq="0">Today</button><button class="chip nm" type="button" data-dq="1">Tomorrow</button><button class="chip nm" type="button" data-dq="7">In a week</button><button class="chip nm" type="button" data-dq="x">Clear</button></div></div>
+    <div class="fld"><span class="dl">Waits for (dependency)</span><select id="dDep" class="fsel" style="max-width:100%;width:min(100%,420px)"></select>
+      <p class="hint">The task shows "⛓ After: …" until that other task is done.</p></div>
     <div class="fld"><span class="dl">Reminder</span><div class="rgrid"><input id="dRem" class="qin sm" type="datetime-local" style="width:220px"></div>
       ${b.rid ? '<label class="dl" style="font-weight:500"><input type="checkbox" id="dRemAll"> Use this time on every repeat</label>' : ''}
       <div class="rgrid"><button class="btn" type="button" data-ics="1">📅 Add to Calendar</button><button class="btn" type="button" data-notif="1">🔔 Allow notifications</button></div>
@@ -1388,12 +1549,17 @@ function openDetails(id, pidIn) {
     <div class="fld"><span class="dl">Move to another day</span><div class="rgrid"><input id="dMove" class="qin sm" type="date" style="width:170px"><button class="btn" type="button" data-mv="1">Move task</button></div></div>
     <div class="btns" style="margin-top:14px"><button class="btn" type="button" data-dt="x">Cancel</button><button class="btn primary" type="button" data-dt="ok">Save</button></div>`);
   const P = $('.panel', modal), q = x => $(x, P);
+  { const opts = [{ id: '', label: 'Nothing (no dependency)' }];
+    const addc = (x, p2) => { if (x.type === 'task' && x.id !== b.id && !x.done && x.text.trim() && opts.length < 70) opts.push({ id: x.id, label: x.text.trim().slice(0, 50) + ' · ' + shortDate(p2.date) }); };
+    if (cur) cur.blocks.forEach(x => addc(x, cur)); pages.forEach(p2 => { if (!cur || p2.id !== cur.id) p2.blocks.forEach(x => addc(x, p2)); });
+    if (b.dep && !opts.some(o => o.id === b.dep)) { const dd0 = findBlockById(b.dep); if (dd0) opts.push({ id: b.dep, label: dd0.b.text.trim().slice(0, 50) + ' · ' + shortDate(dd0.p.date) }); }
+    q('#dDep').innerHTML = opts.map(o => `<option value="${esc(o.id)}">${esc(o.label)}</option>`).join(''); q('#dDep').value = b.dep || ''; }
   q('#dWho').value = b.who || ''; q('#dDue').value = b.due || ''; q('#dRem').value = b.rem ? toLocalInput(b.rem) : ''; q('#dMove').value = '';
   const sync = () => {
     P.querySelectorAll('[data-pr]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pr === f.pri)));
     q('#dSt').innerHTML = [''].concat(S.statuses).map(v => `<button class="chip nm" type="button" data-sv="${esc(v)}" aria-pressed="${v === f.st}">${v ? esc(v) : 'Pending (no stage)'}</button>`).join('');
   };
-  const draft = () => Object.assign({}, b, { who: q('#dWho').value.trim(), due: q('#dDue').value || '', rem: q('#dRem').value ? new Date(q('#dRem').value).getTime() : 0, pri: f.pri, st: f.st });
+  const draft = () => Object.assign({}, b, { who: q('#dWho').value.trim(), due: q('#dDue').value || '', rem: q('#dRem').value ? new Date(q('#dRem').value).getTime() : 0, pri: f.pri, st: f.st, dep: q('#dDep').value });
   P.addEventListener('click', e => {
     const t = e.target;
     let x;
@@ -1414,6 +1580,7 @@ function openDetails(id, pidIn) {
         if (d.pri) tb.pri = d.pri; else delete tb.pri;
         if (d.st) tb.st = d.st; else delete tb.st;
         if (d.due) tb.due = d.due; else delete tb.due;
+        if (d.dep) tb.dep = d.dep; else delete tb.dep;
         if (d.rem) { if (tb.rem !== d.rem) delete tb.remOk; tb.rem = d.rem; } else { delete tb.rem; delete tb.remOk; }
       });
       if (all && b.rid && d.rem) {
@@ -1507,33 +1674,78 @@ els.sheet.addEventListener('pointerdown', e => {
   const row = h.closest('.task'); if (!row || row.parentNode !== els.blocks) return;
   e.preventDefault(); begin();
   try { h.setPointerCapture(e.pointerId); } catch (_) {}
-  drag = { row, id: row.dataset.id, y0: e.clientY, top0: row.getBoundingClientRect().top, h: row.offsetHeight, pid: e.pointerId,
-    sibs: [...els.blocks.children].filter(c => c !== row && c.dataset.id) };
+  const gid = [row.dataset.id].concat(kidIds(row.dataset.id));
+  drag = { row, id: row.dataset.id, x0: e.clientX, y0: e.clientY, top0: row.getBoundingClientRect().top, h: row.offsetHeight, pid: e.pointerId,
+    sibs: [...els.blocks.children].filter(c => c.dataset.id && !gid.includes(c.dataset.id)) };
   row.classList.add('dragging');
 });
 els.sheet.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.pid) return;
-  drag.row.style.transform = `translateY(${e.clientY - drag.y0}px)`;
+  drag.row.style.transform = `translate(${Math.max(-60, Math.min(90, e.clientX - drag.x0))}px,${e.clientY - drag.y0}px)`;
 });
 function endDrag(e) {
   if (!drag || e.pointerId !== drag.pid) return;
   const d = drag; drag = null;
   d.row.classList.remove('dragging'); d.row.style.transform = '';
-  const cy = d.top0 + (e.clientY - d.y0) + d.h / 2;
+  const cy = d.top0 + (e.clientY - d.y0) + d.h / 2, dxl = Math.round((e.clientX - d.x0) / 40);
   let target = null, after = false;
   for (const sb of d.sibs) { const rc = sb.getBoundingClientRect(); target = sb; if (cy < rc.top + rc.height / 2) { after = false; break; } after = true; }
-  if (!target) return;
-  const from = cur.blocks.findIndex(b => b.id === d.id), tid = target.dataset.id;
-  if (from < 0 || tid === d.id) return;
-  const [blk] = cur.blocks.splice(from, 1);
-  let ti = cur.blocks.findIndex(b => b.id === tid);
-  if (after && ti < cur.blocks.length - 1) ti++;
-  cur.blocks.splice(ti, 0, blk);
-  ensureTrailing(); renderBlocks(true); commit();
-  toast('Moved');
+  const gids = [d.id].concat(kidIds(d.id));
+  let moved = false;
+  if (target && !gids.includes(target.dataset.id) && Math.abs(e.clientY - d.y0) > 6) {
+    const grp = cur.blocks.filter(b => gids.includes(b.id)), tid = target.dataset.id;
+    cur.blocks = cur.blocks.filter(b => !gids.includes(b.id));
+    let ti = cur.blocks.findIndex(b => b.id === tid);
+    if (after && ti < cur.blocks.length - 1) ti++;
+    cur.blocks.splice(ti, 0, ...grp); moved = true;
+  }
+  if (dxl !== 0) {
+    gids.forEach(g => { const gb = getBlock(g); const v = clamp((gb.lv || 0) + dxl, 0, 2); if (v) gb.lv = v; else delete gb.lv; });
+    moved = true;
+  }
+  if (!moved) { renderBlocks(false); return; }
+  fixLevels(); ensureTrailing(); renderBlocks(true); commit();
+  toast(dxl > 0 ? 'Made a sub-task' : dxl < 0 ? 'Now a main task' : 'Moved');
 }
 els.sheet.addEventListener('pointerup', endDrag);
 els.sheet.addEventListener('pointercancel', endDrag);
+
+/* ---- text style bar: font, size, bold, italic, colour, link (applies to the whole line/paragraph) ---- */
+let fmtTarget = null;
+function showFmt(id) { fmtTarget = id; document.body.classList.add('fmt'); updateFmt(); }
+function hideFmt() { fmtTarget = null; document.body.classList.remove('fmt'); }
+function updateFmt() {
+  const b = fmtTarget && getBlock(fmtTarget); if (!b) return;
+  $('#fmFont').value = b.fs || '';
+  $('#fmSz').textContent = b.fz || (b.type === 'section' ? 21 : 20);
+  $('#fmB').setAttribute('aria-pressed', String(!!b.fb)); $('#fmI').setAttribute('aria-pressed', String(!!b.fi));
+  $('#fmLink').setAttribute('aria-pressed', String(!!b.lk));
+  $('#fmCol').innerHTML = TCOLS.map(c => `<button class="sw" type="button" data-fc="${c}" aria-label="${c === 'auto' ? 'Default colour' : c}" aria-pressed="${(b.fc || 'auto') === c}"><i style="--c:${c === 'auto' ? 'var(--ink)' : inkColor(c)}"></i></button>`).join('');
+}
+function fmtApply(fn) {
+  const b = fmtTarget && getBlock(fmtTarget); if (!b) return;
+  begin(); fn(b);
+  const el = elMap.get(b.id); if (el) syncBlockEl(el, b);
+  autosizeAll(); commit(); updateFmt();
+}
+$('#fmFont').onchange = e => fmtApply(b => { if (e.target.value) b.fs = e.target.value; else delete b.fs; });
+const fmSize = d => fmtApply(b => { const v = clamp((b.fz || (b.type === 'section' ? 21 : 20)) + d, 14, 30); b.fz = v; });
+$('#fmSm').onclick = () => fmSize(-2); $('#fmLg').onclick = () => fmSize(2);
+$('#fmB').onclick = () => fmtApply(b => { if (b.fb) delete b.fb; else b.fb = true; });
+$('#fmI').onclick = () => fmtApply(b => { if (b.fi) delete b.fi; else b.fi = true; });
+$('#fmCol').addEventListener('click', e => { const x = e.target.closest('[data-fc]'); if (x) fmtApply(b => { if (x.dataset.fc === 'auto') delete b.fc; else b.fc = x.dataset.fc; }); });
+$('#fmClr').onclick = () => fmtApply(b => { ['fs', 'fz', 'fb', 'fi', 'fc', 'lk'].forEach(k => delete b[k]); });
+$('#fmLink').onclick = () => {
+  const b = fmtTarget && getBlock(fmtTarget); if (!b) return;
+  openModal(`<h2>Make this a link</h2><p class="msg">The whole line opens this address when you tap the 🔗 at its right.</p>
+    <input id="lkIn" class="qin" type="url" inputmode="url" placeholder="https://example.com or www.example.com" autocomplete="off">
+    <div class="btns" style="margin-top:14px">${b.lk ? '<button class="btn" type="button" data-lk="rm">Remove link</button>' : ''}<button class="btn" type="button" data-lk="x">Cancel</button><button class="btn primary" type="button" data-lk="ok">Save link</button></div>`);
+  const inp = $('#lkIn', modal); inp.value = b.lk || '';
+  const save = v => { closeModal(); fmtApply(bb => { const u = String(v || '').trim(); if (u) bb.lk = u.slice(0, 500); else delete bb.lk; }); };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(inp.value); } });
+  $('.panel', modal).addEventListener('click', e => { const x = e.target.closest('[data-lk]'); if (!x) return; if (x.dataset.lk === 'ok') save(inp.value); else if (x.dataset.lk === 'rm') save(''); else closeModal(); });
+  inp.focus();
+};
 
 /* delegated events on the paper */
 els.sheet.addEventListener('click', e => {
@@ -1551,6 +1763,9 @@ els.sheet.addEventListener('click', e => {
   else if (a === 'details') openDetails(id);
   else if (a === 'comment') openComments(cur.id, id);
   else if (a === 'edit') focusBlock(id, false);
+  else if (a === 'indent') indentTask(id, 1);
+  else if (a === 'outdent') indentTask(id, -1);
+  else if (a === 'openlink') { const bb = getBlock(id), u = bb && linkOf(bb); if (u) window.open(u, '_blank', 'noopener'); }
   else if (a === 'del') deleteBlock(id);
   else if (a === 'who') openWho(id);
   else if (a === 'repeat') openRepeat(id);
@@ -1585,14 +1800,17 @@ els.sheet.addEventListener('keydown', e => {
 });
 els.sheet.addEventListener('focusin', e => {
   const row = e.target.closest && e.target.closest('[data-id]');
-  if (row && e.target instanceof HTMLTextAreaElement) lastFocusId = row.dataset.id;
+  if (row && e.target instanceof HTMLTextAreaElement) { lastFocusId = row.dataset.id; showFmt(row.dataset.id); }
 });
 els.sheet.addEventListener('focusout', e => {
   begin();
   const ta = e.target;
   if (ta && ta.classList && ta.classList.contains('tt')) setTimeout(() => { if (document.activeElement !== ta) { ta.readOnly = true; const rw = ta.closest('.task'); if (rw) rw.classList.remove('editing'); } }, 150);
 });
-document.addEventListener('click', e => { if (!e.target.closest('.task') && selId) clearSel(); });
+document.addEventListener('click', e => {
+  if (!e.target.closest('.task') && selId) clearSel();
+  if (fmtTarget && e.target.isConnected && !e.target.closest('#sheet') && !e.target.closest('#fmtbar') && !e.target.closest('#modal') && !e.target.closest('#toolbar')) hideFmt();
+});
 
 /* =====================================================================
    Handwriting canvas
@@ -1630,25 +1848,41 @@ window.addEventListener('resize', () => applySize());
 
 function pathStroke(g, s) {
   const p = s.p, n = p.length / 2;
-  g.strokeStyle = inkColor(s.c); g.fillStyle = g.strokeStyle; g.lineWidth = s.w; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.strokeStyle = inkColor(s.c); g.fillStyle = g.strokeStyle; g.lineWidth = s.w; g.lineCap = s.hl ? 'butt' : 'round'; g.lineJoin = 'round';
+  if (s.hl) g.globalAlpha = 0.4;
   g.beginPath();
-  if (n === 1) { g.arc(p[0], p[1], s.w / 2, 0, Math.PI * 2); g.fill(); return; }
+  if (n === 1) { g.arc(p[0], p[1], s.w / 2, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1; return; }
   g.moveTo(p[0], p[1]);
   if (n === 2) g.lineTo(p[2], p[3]);
+  else if (s.poly) { for (let i = 1; i < n; i++) g.lineTo(p[2 * i], p[2 * i + 1]); }
   else {
     for (let i = 1; i < n - 1; i++) g.quadraticCurveTo(p[2 * i], p[2 * i + 1], (p[2 * i] + p[2 * i + 2]) / 2, (p[2 * i + 1] + p[2 * i + 3]) / 2);
     g.lineTo(p[2 * n - 2], p[2 * n - 1]);
   }
   g.stroke();
+  g.globalAlpha = 1;
 }
+const lasso = { path: null, sel: new Set(), moving: false, sx: 0, sy: 0, dx: 0, dy: 0, bb: null };
 function redrawInk() {
   const k = cv.width / 1000;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, cv.width, cv.height);
   ctx.setTransform(k, 0, 0, k, 0, 0);
   if (!cur) return;
-  cur.strokes.forEach(s => pathStroke(ctx, s));
+  const off = lasso.moving ? [lasso.dx, lasso.dy] : null, u = 1 / (scaleK || 1);
+  const draw = st => { if (off && lasso.sel.has(st)) { ctx.save(); ctx.translate(off[0], off[1]); pathStroke(ctx, st); ctx.restore(); } else pathStroke(ctx, st); };
+  cur.strokes.forEach(st => { if (st.hl) draw(st); });          // highlighter sits under the pen
+  cur.strokes.forEach(st => { if (!st.hl) draw(st); });
   if (ptr.stroke) pathStroke(ctx, ptr.stroke);
+  if (lasso.sel.size && lasso.bb) {
+    const b = lasso.bb, o = off || [0, 0];
+    ctx.save(); ctx.setLineDash([8 * u, 6 * u]); ctx.lineWidth = 2 * u; ctx.strokeStyle = inkColor('blue'); ctx.fillStyle = 'rgba(70,110,230,.08)';
+    ctx.fillRect(b[0] + o[0], b[1] + o[1], b[2] - b[0], b[3] - b[1]); ctx.strokeRect(b[0] + o[0], b[1] + o[1], b[2] - b[0], b[3] - b[1]); ctx.restore();
+  }
+  if (lasso.path && lasso.path.length > 1) {
+    ctx.save(); ctx.setLineDash([8 * u, 6 * u]); ctx.lineWidth = 2 * u; ctx.strokeStyle = inkColor('blue'); ctx.beginPath();
+    lasso.path.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.stroke(); ctx.restore();
+  }
 }
 /* draws only the newest piece of a live stroke */
 function drawLive(s) {
@@ -1674,6 +1908,163 @@ function finishLive(s) {
   ctx.lineTo(p[2 * n - 2], p[2 * n - 1]);
   ctx.stroke();
 }
+
+/* ---- hold still to straighten: line, rectangle, ellipse ---- */
+function fitShape(pts) {
+  const n = pts.length; let L = 0, x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (let i = 0; i < n; i++) {
+    const [x, y] = pts[i];
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    if (i) L += Math.hypot(x - pts[i - 1][0], y - pts[i - 1][1]);
+  }
+  const w = x1 - x0, h = y1 - y0, a = pts[0], z = pts[n - 1], d = Math.hypot(z[0] - a[0], z[1] - a[1]);
+  if (Math.hypot(w, h) < 24) return null;
+  if (d > 40) {                                                     // straight line?
+    let dev = 0; const dx = z[0] - a[0], dy = z[1] - a[1];
+    pts.forEach(([x, y]) => { dev = Math.max(dev, Math.abs(dx * (a[1] - y) - (a[0] - x) * dy) / d); });
+    if (dev < 0.07 * d) return [a[0], a[1], z[0], z[1]];
+  }
+  if (d < 0.3 * Math.max(w, h) && L > 80 && w > 16 && h > 16) {     // closed shape?
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = w / 2, ry = h / 2;
+    let eErr = 0, rErr = 0;
+    pts.forEach(([x, y]) => {
+      eErr += Math.abs(Math.hypot((x - cx) / rx, (y - cy) / ry) - 1);
+      rErr += Math.min(Math.min(Math.abs(x - x0), Math.abs(x - x1)) / w, Math.min(Math.abs(y - y0), Math.abs(y - y1)) / h);
+    });
+    eErr /= n; rErr /= n;
+    if (rErr < 0.07 && rErr <= eErr * 0.8) return [x0, y0, x1, y0, x1, y1, x0, y1, x0, y0];
+    if (eErr < 0.17) {
+      const r = Math.abs(rx - ry) < 0.15 * Math.max(rx, ry) ? [(rx + ry) / 2, (rx + ry) / 2] : [rx, ry], out = [];
+      for (let i = 0; i <= 72; i++) { const t = i / 72 * Math.PI * 2; out.push(cx + r[0] * Math.cos(t), cy + r[1] * Math.sin(t)); }
+      return out;
+    }
+  }
+  return null;
+}
+function snapShape() {
+  const st = ptr.stroke;
+  if (!st || ptr.snapped || ptr.id === null || st.p.length < 16) return;
+  const pts = []; for (let i = 0; i < st.p.length; i += 2) pts.push([st.p[i], st.p[i + 1]]);
+  const np = fitShape(pts); if (!np) return;
+  st.p = np.map(r1); if (np.length > 4) st.poly = true; ptr.snapped = true; redrawInk();
+}
+
+/* ---- lasso: select ink, move it, copy, delete, or turn it into text / tasks ---- */
+function inPoly(x, y, poly) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+function selBB() {
+  if (!lasso.sel.size) return null;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  lasso.sel.forEach(st => { const b = bbox(st), m = st.w / 2; x0 = Math.min(x0, b[0] - m); y0 = Math.min(y0, b[1] - m); x1 = Math.max(x1, b[2] + m); y1 = Math.max(y1, b[3] + m); });
+  return [x0 - 8, y0 - 8, x1 + 8, y1 + 8];
+}
+function placeLassoBar() {
+  const bar = $('#lassoBar');
+  if (!lasso.sel.size || !lasso.bb || lasso.moving) { bar.hidden = true; return; }
+  bar.hidden = false;
+  const k = scaleK; let x = lasso.bb[0] * k, y = lasso.bb[1] * k - 58;
+  if (y < 4) y = lasso.bb[3] * k + 10;
+  x = Math.max(4, Math.min(x, els.sheet.clientWidth - bar.offsetWidth - 4));
+  bar.style.left = x + 'px'; bar.style.top = y + 'px';
+}
+function clearLasso() {
+  lasso.sel = new Set(); lasso.bb = null; lasso.path = null; lasso.moving = false; lasso.dx = lasso.dy = 0;
+  $('#lassoBar').hidden = true;
+  if (cur) redrawInk();
+}
+function finishLasso() {
+  if (lasso.moving) {
+    const dx = lasso.dx, dy = lasso.dy; lasso.moving = false; lasso.dx = lasso.dy = 0;
+    if (Math.hypot(dx, dy) > 1) {
+      const ns = new Set();
+      cur.strokes = cur.strokes.map(st => {
+        if (!lasso.sel.has(st)) return st;
+        const pp = st.p.slice(); for (let i = 0; i < pp.length; i++) pp[i] = r1(pp[i] + (i % 2 ? dy : dx));
+        const o = Object.assign({}, st, { p: pp }); ns.add(o); return o;
+      });
+      lasso.sel = ns; lasso.bb = selBB(); commit();
+    }
+    redrawInk(); placeLassoBar(); return;
+  }
+  const poly = lasso.path; lasso.path = null;
+  if (!poly || poly.length < 4) { clearLasso(); return; }
+  const sel = new Set();
+  cur.strokes.forEach(st => {
+    let inside = 0; const n = st.p.length / 2;
+    for (let i = 0; i < n; i++) if (inPoly(st.p[2 * i], st.p[2 * i + 1], poly)) inside++;
+    if (inside / n >= 0.5) sel.add(st);
+  });
+  lasso.sel = sel; lasso.bb = selBB();
+  if (!sel.size) toast('Draw a loop around the ink you want to select.');
+  redrawInk(); placeLassoBar();
+}
+async function recogStrokes(strokes, w, h) {
+  let txt = await nativeRecognize(strokes, S.lang);
+  if (txt == null) txt = await onlineRecognize(strokes, w, h, S.lang);
+  return txt;
+}
+function addRecognized(lines, asTask) {
+  lines = lines.map(x => x.trim()).filter(Boolean);
+  if (!lines.length) return 0;
+  if (asTask) {
+    const now = Date.now();
+    cur.blocks.splice(insertAt(), 0, ...lines.map(t => ({ id: uid(), type: 'task', text: t, done: false, at: now })));
+  } else {
+    let b = getBlock(lastFocusId);
+    if (!b || b.type !== 'text') b = [...cur.blocks].reverse().find(x => x.type === 'text');
+    const txt = lines.join('\n');
+    b.text = b.text.trim() ? b.text.replace(/\s+$/, '') + '\n' + txt : txt;
+  }
+  ensureTrailing(); renderBlocks(true);
+  return lines.length;
+}
+async function lassoConvert(asTask) {
+  const strokes = [...lasso.sel].filter(st => !st.hl);
+  if (!strokes.length) { toast('Select pen handwriting first (not highlighter).'); return; }
+  toast('Reading handwriting…');
+  try {
+    const items = strokes.map(st => ({ st, b: bbox(st) })).sort((a, b) => a.b[1] - b.b[1]), lines = [];
+    items.forEach(it => {
+      const cy = (it.b[1] + it.b[3]) / 2;
+      let ln = lines.find(l => cy >= l.y0 - 0.2 * (l.y1 - l.y0) && cy <= l.y1 + 0.2 * (l.y1 - l.y0));
+      if (!ln) { ln = { y0: it.b[1], y1: it.b[3], items: [] }; lines.push(ln); }
+      ln.items.push(it); ln.y0 = Math.min(ln.y0, it.b[1]); ln.y1 = Math.max(ln.y1, it.b[3]);
+    });
+    lines.sort((a, b) => a.y0 - b.y0);
+    const out = [];
+    for (const ln of lines) {
+      ln.items.sort((a, b) => a.b[0] - b.b[0]);
+      let t0 = 0; const rs = ln.items.map(it => { const n = it.st.p.length / 2, t = []; for (let i = 0; i < n; i++) t.push(t0 + i * 8); t0 += n * 8 + 150; return { p: it.st.p, t }; });
+      const x0 = Math.min(...ln.items.map(i => i.b[0])), x1 = Math.max(...ln.items.map(i => i.b[2]));
+      const txt = await recogStrokes(rs, x1 - x0 + 20, ln.y1 - ln.y0 + 20);
+      if (txt && txt.trim()) out.push(txt.trim());
+    }
+    if (!out.length) { toast('Could not read that. Try selecting one line at a time.'); return; }
+    begin();
+    const n = addRecognized(out, asTask);
+    cur.strokes = cur.strokes.filter(st => !lasso.sel.has(st));
+    clearLasso(); commit(); setMode('text');
+    toast(asTask ? `${n} task${n === 1 ? '' : 's'} created. Now you can repeat, assign and comment.` : 'Converted to text.');
+  } catch (err) { toast(err.message || 'Could not convert.'); }
+}
+$('#lassoBar').addEventListener('click', e => {
+  const b = e.target.closest('[data-ls]'); if (!b) return;
+  const k = b.dataset.ls;
+  if (k === 'x') { clearLasso(); return; }
+  if (k === 'del') { begin(); cur.strokes = cur.strokes.filter(st => !lasso.sel.has(st)); clearLasso(); commit(); return; }
+  if (k === 'dup') {
+    begin(); const ns = new Set(), copies = [];
+    lasso.sel.forEach(st => { const pp = st.p.map((v, i) => r1(v + 24)); const o = Object.assign({}, st, { p: pp }); copies.push(o); ns.add(o); });
+    cur.strokes = cur.strokes.concat(copies); lasso.sel = ns; lasso.bb = selBB(); commit(); redrawInk(); placeLassoBar(); return;
+  }
+  lassoConvert(k === 'task');
+});
 
 /* ---- eraser (removes whole strokes it touches) ---- */
 const bbCache = new WeakMap();
@@ -1765,6 +2156,8 @@ function notePen(e) {
     toast('Pencil detected: it writes, your finger scrolls.');
   }
 }
+let rafRedraw = 0;
+const softRedraw = () => { if (rafRedraw) return; rafRedraw = requestAnimationFrame(() => { rafRedraw = 0; redrawInk(); }); };
 cv.addEventListener('pointerdown', e => {
   if (mode !== 'pen') return;
   notePen(e);
@@ -1780,11 +2173,20 @@ cv.addEventListener('pointerdown', e => {
   try { cv.setPointerCapture(e.pointerId); } catch (_) {}
   ptr.id = e.pointerId; ptr.type = e.pointerType;
   ptr.erasing = tool === 'eraser' || (e.pointerType === 'pen' && (e.buttons & 32));
-  ptr.erased = false;
+  ptr.erased = false; ptr.lasso = false; ptr.snapped = false; clearTimeout(ptr.holdT);
   const [x, y] = toPage(e);
   ptr.lx = x; ptr.ly = y;
   if (ptr.erasing) { eraseAt(x, y); moveRing(e); }
-  else { ptr.stroke = { c: S.color, w: SIZES[S.size], p: [r1(x), r1(y)] }; drawLive(ptr.stroke); }
+  else if (tool === 'lasso') {
+    ptr.lasso = true;
+    const b = lasso.bb;
+    if (lasso.sel.size && b && x >= b[0] - 14 && x <= b[2] + 14 && y >= b[1] - 14 && y <= b[3] + 14) { lasso.moving = true; lasso.sx = x; lasso.sy = y; lasso.dx = lasso.dy = 0; placeLassoBar(); }
+    else { clearLasso(); lasso.path = [[x, y]]; }
+  } else {
+    const hl = tool === 'hl';
+    ptr.stroke = { c: hl ? S.hlColor : S.color, w: hl ? HL_SIZES[S.size] : SIZES[S.size], p: [r1(x), r1(y)] };
+    if (hl) { ptr.stroke.hl = true; softRedraw(); } else drawLive(ptr.stroke);
+  }
 });
 cv.addEventListener('pointermove', e => {
   if (e.pointerId === scr.id) { moveScroll(e); return; }
@@ -1795,11 +2197,17 @@ cv.addEventListener('pointermove', e => {
   (evs.length ? evs : [e]).forEach(ev => {
     const [x, y] = toPage(ev);
     if (ptr.erasing) { eraseTo(x, y); return; }
-    const s = ptr.stroke; if (!s) return;
-    const n = s.p.length;
-    if (Math.hypot(x - s.p[n - 2], y - s.p[n - 1]) < 0.7) return;
-    s.p.push(r1(x), r1(y));
-    drawLive(s);
+    if (ptr.lasso) {
+      if (lasso.moving) { lasso.dx = x - lasso.sx; lasso.dy = y - lasso.sy; }
+      else if (lasso.path) { const l = lasso.path[lasso.path.length - 1]; if (Math.hypot(x - l[0], y - l[1]) > 2) lasso.path.push([x, y]); }
+      softRedraw(); return;
+    }
+    const st = ptr.stroke; if (!st || ptr.snapped) return;
+    const n = st.p.length;
+    if (Math.hypot(x - st.p[n - 2], y - st.p[n - 1]) < 0.7) return;
+    st.p.push(r1(x), r1(y));
+    if (st.hl) softRedraw(); else drawLive(st);
+    if (S.shapes) { clearTimeout(ptr.holdT); ptr.holdT = setTimeout(snapShape, 600); }   // hold still to straighten
   });
 });
 function endPtr(e) {
@@ -1807,17 +2215,20 @@ function endPtr(e) {
   if (e.pointerType === 'pen') { penDown = false; penSeenAt = Date.now(); }
   if (e.pointerId === scr.id) { endScroll(); return; }
   if (e.pointerId !== ptr.id) return;
+  clearTimeout(ptr.holdT);
   if (ptr.erasing) {
     ring.hidden = true;
     ptr.id = null;
     if (ptr.erased) commit();
     return;
   }
-  const s = ptr.stroke;
+  if (ptr.lasso) { ptr.id = null; ptr.lasso = false; finishLasso(); return; }
+  const st = ptr.stroke, snapped = ptr.snapped;
   ptr.id = null; ptr.stroke = null;
-  if (!s) return;
-  finishLive(s);
-  cur.strokes.push(s);
+  if (!st) return;
+  if (!st.hl && !snapped) finishLive(st);
+  cur.strokes.push(st);
+  if (st.hl || snapped) redrawInk();
   commit();
 }
 cv.addEventListener('pointerup', endPtr);
@@ -1838,33 +2249,57 @@ function pendingEarlier(ref) {
   out.sort((x, y) => x.p.date < y.p.date ? -1 : x.p.date > y.p.date ? 1 : (x.b.at || 0) - (y.b.at || 0));
   return out;
 }
+let carryRepOpen = false;
 function renderCarry() {
   if (!cur || cur.date < todayISO()) { carry.hidden = true; return; }   // shown on Today and on any later day
-  const all = pendingEarlier(cur.date), vis = all.filter(x => !x.b.hid), hid = all.filter(x => x.b.hid);
+  const all = pendingEarlier(cur.date);
+  const isRep = x => x.b.rid && rules.get(x.b.rid);
+  const one = all.filter(x => !isRep(x)), rep = all.filter(isRep);      // repeats are shown apart, once per task
+  const vis = one.filter(x => !x.b.hid), hid = one.filter(x => x.b.hid);
   if (!all.length) { carry.hidden = true; if (cur) applySize(); return; }
   carry.hidden = false;
   if (S.carryHidden) {
-    carry.innerHTML = `<div class="carrybar"><span>⏳ ${vis.length} pending from earlier${hid.length ? ` (+${hid.length} hidden)` : ''}</span><button class="btn" type="button" data-c="showall">Show</button></div>`;
+    carry.innerHTML = `<div class="carrybar"><span>${vis.length || !rep.length ? `⏳ ${vis.length} pending from earlier${hid.length ? ` (+${hid.length} hidden)` : ''}` : ''}${rep.length ? `${vis.length ? ' · ' : ''}🔁 ${rep.length} missed repeat${rep.length === 1 ? '' : 's'}` : ''}</span><button class="btn" type="button" data-c="showall">Show</button></div>`;
     applySize(); return;
   }
   const today = cur.date;   // age is counted up to the day being viewed
   const row = ({ p, b }) => {
-    const age = Math.max(0, dd(p.date, today)), r = b.rid ? rules.get(b.rid) : null;
+    const age = Math.max(0, dd(p.date, today));
     return `<div class="cr${age >= 3 ? ' old' : ''}${b.hid ? ' hid' : ''}" data-p="${p.id}" data-b="${b.id}">
       <button class="cb" type="button" data-c="done" aria-label="Mark completed">☐</button>
       <div class="cm"><input class="cin" type="text" value="${esc(b.text)}" aria-label="Edit job">
-        <div class="cmeta"><span class="age">Pending since ${esc(dayShort(b.from || p.date))} (${ageTxt(Math.max(0, dd(b.from || p.date, today)))})</span>${b.st ? ' · ' + esc(b.st) : ''}${b.due ? ' · due ' + esc(shortDate(b.due)) : ''}${b.rid ? ` · <button class="rp rpb" type="button" data-rh-toggle="c:${b.id}">🔁 Repeated${r ? ' · ' + esc(ruleDesc(r)) : ''} ${openHist.has('c:' + b.id) ? '▴' : '▾'}</button>` : ''} · <button class="cwho" type="button" data-c="who">👤 ${b.who ? esc(b.who) : 'Add name'}</button></div>${b.rid && openHist.has('c:' + b.id) ? histHTML(b.rid, true) : ''}</div>
-      <div class="cact"><button class="ic" type="button" data-c="open" aria-label="Open that day's page" title="Open page">↗</button>${b.rid && b.occ ? `<button class="ic" type="button" data-rh="skip" data-rid="${b.rid}" data-date="${b.occ}" aria-label="Skip this date" title="Skip this date">⤼</button>` : ''}${b.hid
+        <div class="cmeta"><span class="age">Pending since ${esc(dayShort(b.from || p.date))} (${ageTxt(Math.max(0, dd(b.from || p.date, today)))})</span>${b.st ? ' · ' + esc(b.st) : ''}${b.due ? ' · due ' + esc(shortDate(b.due)) : ''} · <button class="who cwho" type="button" data-c="who">👤 ${b.who ? esc(b.who) : 'Add name'}</button></div></div>
+      <div class="cact"><button class="ic" type="button" data-c="open" aria-label="Open that day's page" title="Open page">↗</button>${b.hid
         ? '<button class="ic" type="button" data-c="unhide" aria-label="Show again" title="Show again">👁</button>'
         : '<button class="ic" type="button" data-c="hide" aria-label="Hide this job from here" title="Hide from here">🙈</button>'}</div>
     </div>`;
   };
   const list = (carryShowHidden ? vis.concat(hid) : vis).map(row).join('');
-  carry.innerHTML = `<div class="carrycard"><div class="carryhead"><b>⏳ Pending from earlier (${vis.length})</b>
+  const oneCard = one.length ? `<div class="carrycard"><div class="carryhead"><b>⏳ Pending from earlier (${vis.length})</b>
       ${hid.length ? `<button class="btn" type="button" data-c="togglehid">${carryShowHidden ? 'Hide' : 'Show'} hidden (${hid.length})</button>` : ''}
       <button class="btn" type="button" data-c="hideall">Hide all</button></div>
-      <div class="carrylist">${list || '<p class="hint">Nothing visible. Tap "Show hidden" to see hidden jobs.</p>'}</div></div>`;
+      <div class="carrylist">${list || '<p class="hint">Nothing visible. Tap "Show hidden" to see hidden jobs.</p>'}</div></div>` : '';
+  const groups = new Map();
+  rep.forEach(x => { if (!groups.has(x.b.rid)) groups.set(x.b.rid, []); groups.get(x.b.rid).push(x); });
+  const grow = ([rid, items]) => {
+    const r = rules.get(rid), first = items[0], since = first.b.occ || first.p.date, age = Math.max(0, dd(since, today));
+    return `<div class="cg"><div class="cgh"><div class="cm"><b>${esc(r.text)}</b>
+      <div class="cmeta${age >= 3 ? ' old' : ''}">🔁 ${esc(ruleDesc(r))} · missed ${items.length} time${items.length === 1 ? '' : 's'} · oldest ${esc(dayShort(since))}</div></div>
+      <div class="cact"><button class="rhb" type="button" data-rh-toggle="g:${rid}">Review dates ${openHist.has('g:' + rid) ? '▴' : '▾'}</button> <button class="rhb" type="button" data-c="skipall" data-rid="${rid}">Skip all missed</button></div></div>
+      ${openHist.has('g:' + rid) ? histHTML(rid, true) : ''}</div>`;
+  };
+  const repCard = groups.size ? `<div class="carrycard carryrep"><div class="carryhead"><b>🔁 Missed repeats (${groups.size} task${groups.size === 1 ? '' : 's'}, ${rep.length} date${rep.length === 1 ? '' : 's'})</b>
+      <button class="btn" type="button" data-c="togglerep">${carryRepOpen ? 'Hide list' : 'Show list'}</button></div>
+      ${carryRepOpen ? [...groups.entries()].map(grow).join('') : '<p class="hint">A repeating task shows on its own due day. Dates you missed are kept here, one line per task, not on every day.</p>'}</div>` : '';
+  carry.innerHTML = oneCard + repCard;
   applySize();
+}
+function skipMissed(rid) {
+  const r = rules.get(rid); if (!r) return;
+  const items = pendingEarlier(cur.date).filter(x => x.b.rid === rid && x.b.occ);
+  items.forEach(x => { if (!r.skip.includes(x.b.occ)) r.skip.push(x.b.occ); removeInst(x); });
+  r.updated = Date.now(); saveRules(); refreshRuleViews();
+  toast(`Skipped ${items.length} missed date${items.length === 1 ? '' : 's'}. The repeat continues.`);
 }
 carry.addEventListener('click', e => {
   const btn = e.target.closest('[data-c]'); if (!btn) return;
@@ -1874,6 +2309,8 @@ carry.addEventListener('click', e => {
   if (c === 'hideall') { S.carryHidden = true; saveSettings(); renderCarry(); return; }
   if (c === 'showall') { S.carryHidden = false; saveSettings(); renderCarry(); return; }
   if (c === 'togglehid') { carryShowHidden = !carryShowHidden; renderCarry(); return; }
+  if (c === 'togglerep') { carryRepOpen = !carryRepOpen; renderCarry(); return; }
+  if (c === 'skipall') { skipMissed(btn.dataset.rid); return; }
   if (!b) return;
   if (c === 'done') { setTaskDone(pid, bid, true); renderCarry(); toast('Marked completed', 'Undo', () => { setTaskDone(pid, bid, false); renderCarry(); }); }
   else if (c === 'hide') { b.hid = true; touchOther(p); renderCarry(); toast('Hidden from this list (still counted in the summary)', 'Undo', () => { delete b.hid; touchOther(p); renderCarry(); }); }
@@ -2017,7 +2454,7 @@ $('#tpl').addEventListener('click', e => {
    Handwriting -> text pad
    ===================================================================== */
 const padEl = $('#pad'), padCv = $('#padCv'), pctx = padCv.getContext('2d'), recText = $('#recText'), recStatus = $('#recStatus');
-const padS = { strokes: [], live: null, id: null, t0: 0, timer: 0, seq: 0, edited: false };
+const padS = { strokes: [], live: null, id: null, t0: 0, timer: 0, seq: 0, edited: false, gen: 0 };
 function padOpen() {
   if (!padEl.hidden) return;
   padEl.hidden = false; $('#recLang').value = S.lang; padSize(); updatePadUI();
@@ -2040,7 +2477,12 @@ function updatePadUI() {
   const has = !!recText.value.trim();
   $('#padText').disabled = !has; $('#padTask').disabled = !has;
   $('#padUndo').disabled = !padS.strokes.length;
+  document.querySelectorAll('#padAs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.as === S.padAs)));
+  $('#padAuto').textContent = S.padAuto ? '⚡ Auto-add: On' : '⚡ Auto-add: Off';
+  $('#padAuto').setAttribute('aria-pressed', String(S.padAuto));
 }
+$('#padAs').addEventListener('click', e => { const b = e.target.closest('[data-as]'); if (b) { S.padAs = b.dataset.as; saveSettings(); updatePadUI(); } });
+$('#padAuto').onclick = () => { S.padAuto = !S.padAuto; saveSettings(); updatePadUI(); };
 window.addEventListener('resize', () => { if (!padEl.hidden) padSize(); });
 padCv.addEventListener('pointerdown', e => {
   notePen(e);
@@ -2050,7 +2492,7 @@ padCv.addEventListener('pointerdown', e => {
   if (padS.id !== null) return;
   e.preventDefault();
   try { padCv.setPointerCapture(e.pointerId); } catch (_) {}
-  clearTimeout(padS.timer);
+  clearTimeout(padS.timer); padS.gen++;
   if (!padS.strokes.length) padS.t0 = e.timeStamp;
   const r = padCv.getBoundingClientRect();
   padS.id = e.pointerId;
@@ -2117,13 +2559,14 @@ async function onlineRecognize(strokes, w, h, lang) {
 }
 async function recognize() {
   if (!padS.strokes.length) { recText.value = ''; recStatus.textContent = ''; updatePadUI(); return; }
-  const seq = ++padS.seq, r = padCv.getBoundingClientRect();
+  const seq = ++padS.seq, r = padCv.getBoundingClientRect(), gen = padS.gen;
   recStatus.textContent = 'Reading…';
   try {
     let txt = await nativeRecognize(padS.strokes, S.lang);
     if (txt == null) txt = await onlineRecognize(padS.strokes, r.width, r.height, S.lang);
     if (seq !== padS.seq) return;
     if (!padS.edited) recText.value = txt;
+    if (S.padAuto && txt && txt.trim() && !padS.edited && gen === padS.gen && !padS.live && padS.id === null) { padInsert(S.padAs === 'task'); return; }
     recStatus.textContent = txt ? 'Check the text, then add it to the page.' : 'Could not read that. Try writing larger, on one line.';
   } catch (err) {
     if (seq !== padS.seq) return;
@@ -2149,13 +2592,8 @@ function padInsert(asTask) {
   const txt = recText.value.trim();
   if (!txt) return;
   begin();
-  if (asTask) createTask(txt.replace(/\s*\n\s*/g, ' '));
-  else {
-    let b = getBlock(lastFocusId);
-    if (!b || b.type !== 'text') b = [...cur.blocks].reverse().find(x => x.type === 'text');
-    b.text = b.text.trim() ? b.text.replace(/\s+$/, '') + '\n' + txt : txt;
-    ensureTrailing(); renderBlocks(true); commit();
-  }
+  addRecognized(txt.split('\n'), asTask);
+  commit();
   padReset();
   toast(asTask ? 'Added as a task' : 'Added to the page');
 }
@@ -2186,16 +2624,25 @@ function secOfPage(p, bid) {
   for (const x of p.blocks) { if (x.type === 'section') sec = x.text.trim(); else if (x.id === bid) return sec; }
   return '';
 }
+const smCache = new Map();
+function subMapsCached(p) {
+  const key = p.id + '|' + p.updated + '|' + p.blocks.length, c = smCache.get(p.id);
+  if (c && c.key === key) return c.v;
+  const v = subMaps(p.blocks); smCache.set(p.id, { key, v }); return v;
+}
 function mkT(p, b) {
   const today = todayISO(), base = b.from || p.date, done = !!b.done, age = Math.max(0, dd(base, today));
   const took = done && b.doneAt ? Math.max(0, dd(base, isoOf(new Date(b.doneAt)))) : null;
   const late = !!(b.due && !done && b.due < today), cm = b.cm || [];
+  const sm = subMapsCached(p), dep = b.dep ? findBlockById(b.dep) : null;
   return { pid: p.id, bid: b.id, text: b.text.trim().replace(/\s+/g, ' '), who: b.who || '', done, date: p.date,
     sec: secOfPage(p, b.id), pri: b.pri || '', st: b.st || '', due: b.due || '', late, lateDays: late ? dd(b.due, today) : 0,
     added: dayFull(base), addedTime: b.at ? clock(b.at) : '', doneTxt: done ? (b.doneAt ? dtFull(b.doneAt) : 'Not recorded') : '',
     doneAt: b.doneAt || 0, at: b.at || 0, age, days: done ? took : age,
     cm: cm.length ? cm[cm.length - 1] : null, cmN: cm.length, cmAll: cm,
-    rid: b.rid || '', rep: b.rid ? (rules.get(b.rid) ? ruleDesc(rules.get(b.rid)) : 'Repeated') : '' };
+    rid: b.rid || '', rep: b.rid ? (rules.get(b.rid) ? ruleDesc(rules.get(b.rid)) : 'Repeated') : '',
+    par: sm.parentOf.get(b.id) ? sm.parentOf.get(b.id).text.trim() : '', prog: sm.progOf.get(b.id) || null,
+    depText: dep && !dep.b.done ? dep.b.text.trim() : '', depOpen: !!(dep && !dep.b.done && !done) };
 }
 const PRI = { h: 'High', m: 'Medium', l: 'Low' };
 function passT(t) {
@@ -2353,7 +2800,7 @@ function tableHTML(rows, inter) {
     const stCell = t.done ? '<span class="bdg ok">Completed</span>' : t.st ? `<span class="bdg pr">${esc(t.st)}</span>` : '<span class="bdg pe">Pending</span>';
     const cmTxt = t.cm ? `${esc(t.cm.x.length > 90 ? t.cm.x.slice(0, 90) + '…' : t.cm.x)}<span class="cmd">${esc(dtFull(t.cm.t))}${t.cmN > 1 ? ` · +${t.cmN - 1} earlier` : ''}</span>` : '-';
     const cm = inter ? (t.cm ? `<button class="cmo" type="button" data-cmo="${t.pid}|${t.bid}" title="Open all comments">${cmTxt}</button>` : `<button class="cmo" type="button" data-cmo="${t.pid}|${t.bid}" title="Add a comment">＋ Comment</button>`) : cmTxt;
-    return `<tr class="${t.done ? 'done' : ''}${!t.done && t.age >= 3 ? ' old' : ''}">${cb}<td class="dsc" data-l="Job">${txt}${rp}</td><td data-l="Section">${t.sec ? esc(t.sec) : '-'}</td><td data-l="Responsibility">${t.who ? esc(t.who) : '-'}</td><td data-l="Priority">${pri}</td><td data-l="Due">${due}</td><td data-l="Added">${esc(t.added)}${t.addedTime ? `<small>${esc(t.addedTime)}</small>` : ''}</td><td data-l="Completed">${t.done ? esc(t.doneTxt) : '-'}</td><td data-l="Status">${stCell}</td><td class="num" data-l="Pending days">${t.days == null ? '-' : t.days}</td><td data-l="Comment">${cm}</td></tr>`;
+    return `<tr class="${t.done ? 'done' : ''}${!t.done && t.age >= 3 ? ' old' : ''}">${cb}<td class="dsc" data-l="Job">${txt}${t.par ? `<small class="rp" style="color:var(--muted)!important">↳ Sub-task of: ${esc(t.par)}</small>` : ''}${t.prog ? `<small class="rp" style="color:var(--muted)!important">Sub-tasks: ${t.prog.d}/${t.prog.t} done</small>` : ''}${rp}</td><td data-l="Section">${t.sec ? esc(t.sec) : '-'}</td><td data-l="Responsibility">${t.who ? esc(t.who) : '-'}</td><td data-l="Priority">${pri}</td><td data-l="Due">${due}</td><td data-l="Added">${esc(t.added)}${t.addedTime ? `<small>${esc(t.addedTime)}</small>` : ''}</td><td data-l="Completed">${t.done ? esc(t.doneTxt) : '-'}</td><td data-l="Status">${stCell}${t.depOpen ? `<span class="late" style="color:var(--muted)">⛓ waits for: ${esc(t.depText)}</span>` : ''}</td><td class="num" data-l="Pending days">${t.days == null ? '-' : t.days}</td><td data-l="Comment">${cm}</td></tr>`;
   }).join('');
   return `${inter ? '<div class="swipe">↔ Swipe the table sideways for more columns</div>' : ''}<div class="tw"><table class="jt">${head}<tbody>${body}</tbody></table></div>`;
 }
@@ -2414,6 +2861,9 @@ function waText(m) {
   const item = (t, i) => {
     const a = [`${i + 1}. *${t.text}*`];
     if (t.sec) a.push(`   📑 Section: ${t.sec}`);
+    if (t.par) a.push(`   ↳ Sub-task of: ${t.par}`);
+    if (t.prog) a.push(`   ☰ Sub-tasks: ${t.prog.d}/${t.prog.t} done`);
+    if (t.depOpen) a.push(`   ⛓ Waiting for: ${t.depText}`);
     if (t.who) a.push(`   👤 ${t.who}`);
     if (t.pri) a.push(`   ⚑ Priority: ${PRI[t.pri]}`);
     if (t.due) a.push(`   🗓 Due: ${dayFull(t.due)}${t.late ? ` (overdue ${t.lateDays} day${t.lateDays === 1 ? '' : 's'})` : ''}`);
@@ -2581,10 +3031,10 @@ function csvOf(m) {
     head = ['Task', 'Repeat', 'Responsibility', 'Due date', 'Status', 'Completion date', 'Pending days'];
     m.groups.forEach(g => g.detail.slice().reverse().forEach(d => rows.push([g.name, g.rule ? ruleDesc(g.rule) : '', g.who, dayFull(d.date), d.status, d.doneTxt === '-' ? '' : d.doneTxt, d.days == null ? '' : d.days])));
   } else {
-    head = ['Job description', 'Section', 'Responsibility', 'Priority', 'Due date', 'Overdue days', 'Added date', 'Added time', 'Completion date', 'Status', 'Pending days', 'Repeated', 'Latest comment', 'Latest comment date', 'All comments'];
+    head = ['Job description', 'Section', 'Responsibility', 'Priority', 'Due date', 'Overdue days', 'Added date', 'Added time', 'Completion date', 'Status', 'Pending days', 'Repeated', 'Sub-task of', 'Sub-tasks done', 'Waits for', 'Latest comment', 'Latest comment date', 'All comments'];
     const list = m.kind === 'days' ? (m.early || []).concat(...m.days.map(d => d.rows)) : m.kind === 'sections' ? [].concat(...m.groups.map(g => g.rows)) : m.rows;
     list.forEach(t => rows.push([t.text, t.sec, t.who, t.pri ? PRI[t.pri] : '', t.due ? dayFull(t.due) : '', t.late ? t.lateDays : '', t.added, t.addedTime, t.done ? t.doneTxt : '',
-      t.done ? 'Completed' : (t.st || 'Pending'), t.days == null ? '' : t.days, t.rid ? t.rep : '', t.cm ? t.cm.x : '', t.cm ? dtFull(t.cm.t) : '', t.cmAll.map(c => `[${dtFull(c.t)}] ${c.x}`).join(' | ')]));
+      t.done ? 'Completed' : (t.st || 'Pending'), t.days == null ? '' : t.days, t.rid ? t.rep : '', t.par, t.prog ? `${t.prog.d}/${t.prog.t}` : '', t.depOpen ? t.depText : '', t.cm ? t.cm.x : '', t.cm ? dtFull(t.cm.t) : '', t.cmAll.map(c => `[${dtFull(c.t)}] ${c.x}`).join(' | ')]));
   }
   return '\ufeff' + [head].concat(rows).map(r => r.map(csvCell).join(',')).join('\r\n');
 }
@@ -2614,8 +3064,8 @@ $('#bPdf').onclick = () => { toast('Choose Save as PDF or Share in the print dia
 function setMode(m) {
   mode = m;
   if (m === 'pen' && document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  if (m === 'pen') clearSel();
-  if (m !== 'pen') ring.hidden = true;
+  if (m === 'pen') { clearSel(); hideFmt(); }
+  if (m !== 'pen') { ring.hidden = true; clearLasso(); }
   updateToolbar();
 }
 function syncBody() {
@@ -2627,13 +3077,19 @@ function syncBody() {
 }
 function updateToolbar() {
   syncBody();
+  document.body.dataset.tool = tool;
   document.querySelectorAll('#penmode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pm === S.penMode && tool === 'pen')));
+  document.querySelectorAll('#tools button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tl === tool)));
+  $('#bShapes').textContent = S.shapes ? '📐 Straighten shapes: On' : '📐 Straighten shapes: Off';
+  $('#bShapes').setAttribute('aria-pressed', String(S.shapes));
+  $('#bShapes').title = 'Draw a line, box or circle and hold the pen still for a moment to make it neat.';
   $('#bText').classList.toggle('on', mode === 'text');
   $('#bPen').classList.toggle('on', mode === 'pen' && tool === 'pen');
   $('#bEraser').classList.toggle('on', mode === 'pen' && tool === 'eraser');
-  $('#penlabel').textContent = tool === 'eraser' ? 'Eraser: drag over ink to remove it' : S.penMode === 'text' ? 'Write in the box below. It becomes text.' : 'Write anywhere on the page';
-  $('#colors').innerHTML = COLORS.map(c =>
-    `<button class="sw" type="button" data-color="${c}" aria-label="${c === 'auto' ? 'Black ink' : c + ' ink'}" aria-pressed="${S.color === c}"><i style="--c:${inkColor(c)}"></i></button>`).join('');
+  $('#penlabel').textContent = tool === 'eraser' ? 'Eraser: drag over ink to remove it' : tool === 'lasso' ? 'Select: draw a loop around ink, then drag it or convert it' : tool === 'hl' ? 'Highlighter: draw over text or ink' : S.penMode === 'text' ? 'Write in the box below. It becomes text.' : 'Draw anywhere on the page';
+  const hlMode = tool === 'hl', cl = hlMode ? HL_COLORS : COLORS, curC = hlMode ? S.hlColor : S.color;
+  $('#colors').innerHTML = cl.map(c =>
+    `<button class="sw" type="button" data-color="${c}" aria-label="${c === 'auto' ? 'Black ink' : c + ' colour'}" aria-pressed="${curC === c}"><i style="--c:${inkColor(c)}"></i></button>`).join('');
   $('#sizes').innerHTML = [6, 10, 16].map((d, i) =>
     `<button class="sw sz" type="button" data-size="${i}" aria-label="Size ${i + 1}" aria-pressed="${S.size === i}"><i style="--d:${d}px"></i></button>`).join('');
   $('#bFinger').textContent = S.fingerDraw ? '☝️ Finger draws' : '☝️ Finger scrolls';
@@ -2641,7 +3097,8 @@ function updateToolbar() {
 }
 $('#colors').addEventListener('click', e => {
   const b = e.target.closest('[data-color]'); if (!b) return;
-  S.color = b.dataset.color; if (tool === 'eraser') tool = 'pen'; saveSettings(); updateToolbar();
+  if (tool === 'hl') S.hlColor = b.dataset.color; else { S.color = b.dataset.color; if (tool === 'eraser' || tool === 'lasso') tool = 'pen'; }
+  saveSettings(); updateToolbar();
 });
 $('#sizes').addEventListener('click', e => {
   const b = e.target.closest('[data-size]'); if (!b) return;
@@ -2651,6 +3108,11 @@ $('#penmode').addEventListener('click', e => {
   const b = e.target.closest('[data-pm]'); if (!b) return;
   S.penMode = b.dataset.pm; tool = 'pen'; saveSettings(); updateToolbar();
 });
+$('#tools').addEventListener('click', e => {
+  const b = e.target.closest('[data-tl]'); if (!b) return;
+  tool = b.dataset.tl; clearLasso(); setMode('pen');
+});
+$('#bShapes').onclick = () => { S.shapes = !S.shapes; saveSettings(); updateToolbar(); };
 $('#bFinger').onclick = () => { S.fingerDraw = !S.fingerDraw; S.fingerSet = true; saveSettings(); updateToolbar(); };
 $('#bClear').onclick = async () => {
   if (!cur.strokes.length) { toast('There is no handwriting on this page.'); return; }
@@ -2696,6 +3158,7 @@ function openDate(date, idx = 0) {
   window.scrollTo(0, 0);
 }
 function renderAll() {
+  clearLasso(); hideFmt();
   els.blocks.innerHTML = ''; els.doneList.innerHTML = ''; elMap.clear();
   renderBlocks(false);
   updateNav();
@@ -3134,7 +3597,8 @@ function renderExport(inkOnly) {
       }
     });
   }
-  cur.strokes.forEach(s => pathStroke(g, s));
+  cur.strokes.forEach(s => { if (s.hl) pathStroke(g, s); });
+  cur.strokes.forEach(s => { if (!s.hl) pathStroke(g, s); });
   return c;
 }
 function withLightTheme(fn) {
@@ -3257,7 +3721,7 @@ function applyTheme() {
   document.documentElement.dataset.theme = t;
   $('#themeColor').setAttribute('content', t === 'dark' ? '#0f1114' : '#c9d0cb');
   updateToolbar();
-  if (cur) redrawInk();
+  if (cur) { redrawInk(); elMap.forEach((el, id) => { const b = getBlock(id); if (b) syncBlockEl(el, b); }); updateFmt(); }
 }
 if (window.matchMedia) {
   const mq = window.matchMedia('(prefers-color-scheme: dark)');
