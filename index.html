@@ -86,7 +86,7 @@ body.pen #sheet{box-shadow:0 0 0 3px var(--accent),var(--shadow)}
 .blk textarea{display:block;width:100%;height:34px;margin:0;padding:0;border:0;outline:0;background:transparent;color:var(--ink);
   font:400 20px/34px var(--serif);resize:none;overflow:hidden;border-radius:0;-webkit-appearance:none;appearance:none;caret-color:var(--accent)}
 .blk textarea::placeholder{color:var(--muted);opacity:.7}
-.task{display:flex;align-items:flex-start;gap:14px}
+.task{display:block}
 .chk{flex:none;position:relative;width:44px;height:44px;margin:-5px -9px -5px -9px;padding:0;border:0;background:transparent;display:grid;place-items:center;color:var(--ink)}
 .chk svg{display:block;transition:transform .15s}
 .chk:active svg{transform:scale(.88)}
@@ -297,8 +297,8 @@ table.jt table.sub td{display:table-cell;float:none}
 .task{position:relative}
 .task.sel{background:var(--accent-soft)}
 .tbar{display:none!important}
-.task.p-h::before,.task.p-m::before,.task.p-l::before{content:'';position:absolute;left:-14px;top:6px;bottom:6px;width:4px;border-radius:2px}
-.task.p-h::before{background:#d64545}.task.p-m::before{background:#e39a1d}.task.p-l::before{background:#6b9bd6}
+.task.p-h .trow::before,.task.p-m .trow::before,.task.p-l .trow::before{content:'';position:absolute;left:-14px;top:6px;bottom:6px;width:4px;border-radius:2px}
+.task.p-h .trow::before{background:#d64545}.task.p-m .trow::before{background:#e39a1d}.task.p-l .trow::before{background:#6b9bd6}
 .chipx{flex:none;align-self:flex-start;margin-top:4px;height:26px;padding:0 9px;border:0;border-radius:13px;font:600 12px/26px var(--sans);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
 .chipx:empty{display:none}
 .due{background:var(--btn);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
@@ -384,21 +384,22 @@ body[data-tool="lasso"] #colors,body[data-tool="eraser"] #colors{display:none}
 body[data-tool="lasso"] #sizes{display:none}
 
 /* ---------- text style bar, links, sub-tasks, dependencies ---------- */
-#fmtbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));z-index:60;width:min(980px,calc(100vw - 16px));flex-direction:column;gap:6px;padding:8px 10px;background:var(--paper);border-radius:18px;box-shadow:var(--shadow),0 0 0 1px var(--line)}
-.fmrow{display:flex;gap:6px 8px;flex-wrap:wrap;align-items:center;justify-content:center}
-#taskbar{display:none;border-top:1px solid var(--line);padding-top:6px}
-body.fmt.taskfmt #taskbar{display:flex}
-#taskbar .fmtb{min-height:42px}
-#taskbar .danger{color:var(--danger)}
-body.fmt #desk{padding-bottom:calc(env(safe-area-inset-bottom) + 190px)}
-.grip{display:none;flex:none;align-self:flex-start;width:34px;height:34px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:19px;padding:0;touch-action:none;cursor:grab}
-.task.sel .grip{display:inline-flex;align-items:center;justify-content:center}
-@media (max-width:760px){
-  #fmtbar{bottom:auto;top:var(--fmtTop,70px);left:8px;right:8px;width:auto;transform:none}
-  body.fmt #desk{padding-bottom:calc(env(safe-area-inset-bottom) + 96px)}
-}
-body.fmt #fmtbar{display:flex}
+#fmtbar{display:flex;gap:6px 8px;align-items:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:0 12px 8px}
+#fmtbar::-webkit-scrollbar{display:none}
+#fmtbar>*{flex:none}
+#fmtbar>:first-child{margin-left:auto}#fmtbar>:last-child{margin-right:auto}
+#fmtbar.off .fmtb,#fmtbar.off .fsel,#fmtbar.off .sw{opacity:.45}
 body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
+/* the options of a tapped task sit right under it, in the page flow, two ruled lines high */
+.trow{position:relative;display:flex;align-items:flex-start;gap:14px;min-height:34px}
+.topts{display:none;height:68px;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;margin-left:-2px;padding:0 2px}
+.topts::-webkit-scrollbar{display:none}
+.task.sel .topts{display:flex}
+.topts button{flex:none;min-height:44px;padding:0 13px;border:0;border-radius:10px;background:var(--btn);font:600 14px var(--sans);box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);white-space:nowrap}
+.topts .tdel{color:var(--danger)}
+.topts .dh{touch-action:none;cursor:grab}
+.topts [data-act="outdent"]{display:none}
+.task.sub .topts [data-act="outdent"]{display:inline-block}
 .fmtb{min-width:42px;height:42px;padding:0 12px;border:0;border-radius:12px;background:var(--btn);font:600 15px var(--sans);box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
 .fmtb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:none}
 #fmtbar .fsel{height:42px}
@@ -444,6 +445,11 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
 .tpreview li.txt{list-style:none;margin-left:-20px;color:var(--muted);font-style:italic}
 .tpreview li.chk{list-style:none;margin-left:-20px}
 .tpreview li.chk::before{content:'☐ ';color:var(--accent)}
+
+/* ---------- how long a job has been waiting ---------- */
+.agepill{flex:none;align-self:flex-start;margin-top:4px;height:26px;padding:0 10px;border-radius:13px;font:700 12px/26px var(--sans);white-space:nowrap}
+.agepill.a1{background:#fdebd2;color:#8a4b00}.agepill.a2{background:#ffd9b3;color:#8a3b00}.agepill.a3{background:#fde3e0;color:#a32a1d}
+:root[data-theme="dark"] .agepill.a1{background:#57411a;color:#ffd18b}:root[data-theme="dark"] .agepill.a2{background:#6a3a14;color:#ffc796}:root[data-theme="dark"] .agepill.a3{background:#5a2620;color:#ffb3a8}
 
 /* ---------- tablets & phones ---------- */
 @media (max-width:900px){
@@ -491,6 +497,13 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
     <button class="tb" id="bSearch" type="button" aria-label="Search" title="Search"><span class="e">🔍</span><span class="lbl">Search</span></button>
     <button class="tb" id="bSummary" type="button" aria-label="Summary of jobs" title="Summary of jobs"><span class="e">📊</span><span class="lbl">Summary</span></button>
     <button class="tb" id="bMore" type="button" aria-label="Backup, export and settings" title="Backup, export and settings"><span class="e">⋯</span></button>
+  </div>
+  <div id="fmtbar" class="off" role="toolbar" aria-label="Text style">
+    <select id="fmFont" class="fsel" aria-label="Font"><option value="">Font: default</option><option value="serif">Serif</option><option value="sans">Clean sans</option><option value="hand">Handwriting style</option><option value="mono">Typewriter</option></select>
+    <button class="fmtb" id="fmSm" type="button" aria-label="Smaller text">A−</button><span class="pl" id="fmSz">20</span><button class="fmtb" id="fmLg" type="button" aria-label="Bigger text">A+</button>
+    <button class="fmtb" id="fmB" type="button" aria-label="Bold"><b>B</b></button><button class="fmtb" id="fmI" type="button" aria-label="Italic"><i>I</i></button>
+    <span class="grp" id="fmCol" role="group" aria-label="Text colour"></span>
+    <button class="fmtb" id="fmLink" type="button">🔗 Link</button><button class="fmtb" id="fmClr" type="button">Reset style</button>
   </div>
   <div id="tplhead">
     <button class="btn" id="tBack" type="button">‹ Diary</button>
@@ -593,21 +606,6 @@ body.pen #fmtbar,body.sumview #fmtbar,body.tplview #fmtbar{display:none}
   </div>
 </div>
 
-<div id="fmtbar" role="toolbar" aria-label="Text style and task actions">
-  <div class="fmrow">
-    <select id="fmFont" class="fsel" aria-label="Font"><option value="">Font: default</option><option value="serif">Serif</option><option value="sans">Clean sans</option><option value="hand">Handwriting style</option><option value="mono">Typewriter</option></select>
-    <button class="fmtb" id="fmSm" type="button" aria-label="Smaller text">A−</button><span class="pl" id="fmSz">20</span><button class="fmtb" id="fmLg" type="button" aria-label="Bigger text">A+</button>
-    <button class="fmtb" id="fmB" type="button" aria-label="Bold"><b>B</b></button><button class="fmtb" id="fmI" type="button" aria-label="Italic"><i>I</i></button>
-    <span class="grp" id="fmCol" role="group" aria-label="Text colour"></span>
-    <button class="fmtb" id="fmLink" type="button">🔗 Link</button><button class="fmtb" id="fmClr" type="button">Reset style</button>
-    <button class="fmtb" id="fmClose" type="button" aria-label="Close this bar">✕</button>
-  </div>
-  <div class="fmrow" id="taskbar">
-    <button class="fmtb" type="button" data-ta="repeat">🔁 Repeat</button><button class="fmtb" type="button" data-ta="indent">⇥ Sub-task</button><button class="fmtb" type="button" data-ta="outdent">⇤ Promote</button>
-    <button class="fmtb" type="button" data-ta="up" aria-label="Move up">↑</button><button class="fmtb" type="button" data-ta="down" aria-label="Move down">↓</button>
-    <button class="fmtb" type="button" data-ta="details">⚙ Details</button><button class="fmtb" type="button" data-ta="comment">💬 Comment</button><button class="fmtb danger" type="button" data-ta="del">🗑️ Delete</button>
-  </div>
-</div>
 <div id="ring" hidden></div>
 <div id="remind" aria-live="polite"></div>
 <div id="modal" hidden></div>
@@ -1163,18 +1161,15 @@ function makeBlockEl(b) {
   if (b.type === 'task') {
     el.className = 'blk task';
     el.innerHTML =
-      '<button class="chk" type="button" role="checkbox" data-act="toggle"><svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true"><rect class="box" x="2" y="2" width="22" height="22" rx="7"/><path class="tick" d="M7.5 13.4l3.8 3.8 7.2-7.6"/></svg></button>' +
-      '<textarea class="tt" rows="1" data-x="1" aria-label="Task. Type or write with the Pencil" placeholder="New task"></textarea>' +
-      '<span class="chipx prog" title="Sub-tasks done"></span>' +
-      '<button class="chipx dep" type="button" data-act="details" aria-label="Waits for another task"></button>' +
-      '<button class="chipx stt" type="button" data-act="details" aria-label="Stage"></button>' +
-      '<button class="chipx due" type="button" data-act="details" aria-label="Due date"></button>' +
-      '<button class="rep" type="button" data-act="repeat" aria-label="Repeat settings"><span>🔁</span><span class="rt"> Repeated</span></button>' +
-      '<button class="who" type="button" data-act="who" aria-label="Assignee"></button>' +
-      '<span class="tsec" aria-hidden="true"></span>' +
-      '<button class="lkb" type="button" data-act="openlink" hidden aria-label="Open link">🔗</button>' +
-      '<button class="cmt" type="button" data-act="comment" aria-label="Comments">💬<b></b></button>' +
-      '<button class="grip" type="button" data-drag="1" aria-label="Drag up or down to move, sideways to make a sub-task" title="Drag to move">⠿</button>';
+      '<div class="trow">' +
+      '<button class="chk" type="button" role="checkbox" data-act="toggle"><svg viewBox="0 0 26 26" width="26" height="26" aria-hidden="true"><rect class="box" x="2" y="2" width="22" height="22" rx="7"/><path class="tick" d="M7.5 13.4l3.8 3.8 7.2-7.6"/></svg></button><textarea class="tt" rows="1" data-x="1" aria-label="Task. Type or write with the Pencil" placeholder="New task"></textarea><span class="chipx prog" title="Sub-tasks done"></span><button class="chipx dep" type="button" data-act="details" aria-label="Waits for another task"></button><button class="chipx stt" type="button" data-act="details" aria-label="Stage"></button><button class="chipx due" type="button" data-act="details" aria-label="Due date"></button><button class="rep" type="button" data-act="repeat" aria-label="Repeat settings"><span>🔁</span><span class="rt"> Repeated</span></button><button class="who" type="button" data-act="who" aria-label="Assignee"></button><span class="tsec" aria-hidden="true"></span><button class="lkb" type="button" data-act="openlink" hidden aria-label="Open link">🔗</button><button class="cmt" type="button" data-act="comment" aria-label="Comments">💬<b></b></button>' +
+      '</div>' +
+      '<div class="topts" role="toolbar" aria-label="Task options">' +
+      '<button type="button" data-act="repeat">🔁 Repeat</button><button type="button" data-act="indent">⇥ Sub-task</button><button type="button" data-act="outdent">⇤ Promote</button>' +
+      '<button type="button" data-act="up" aria-label="Move up">↑</button><button type="button" data-act="down" aria-label="Move down">↓</button>' +
+      '<button type="button" data-act="details">⚙ Details</button><button type="button" data-act="comment">💬 Comment</button>' +
+      '<button type="button" class="dh" data-drag="1" aria-label="Drag up or down to move, sideways to make a sub-task" title="Drag to move">⠿ Move</button>' +
+      '<button type="button" class="tdel" data-act="del">🗑️ Delete</button></div>';
   } else if (b.type === 'section') {
     el.className = 'blk secblk';
     el.innerHTML = '<textarea class="sx" rows="1" data-x="1" aria-label="Section heading" placeholder="Section heading, e.g. Electrical"></textarea>' +
@@ -1718,7 +1713,7 @@ els.sheet.addEventListener('pointerdown', e => {
   e.preventDefault(); begin();
   try { h.setPointerCapture(e.pointerId); } catch (_) {}
   const gid = [row.dataset.id].concat(kidIds(row.dataset.id));
-  drag = { row, id: row.dataset.id, x0: e.clientX, y0: e.clientY, top0: row.getBoundingClientRect().top, h: row.offsetHeight, pid: e.pointerId,
+  drag = { row, id: row.dataset.id, x0: e.clientX, y0: e.clientY, top0: row.getBoundingClientRect().top, h: row.querySelector('.trow').offsetHeight, pid: e.pointerId,
     sibs: [...els.blocks.children].filter(c => c.dataset.id && !gid.includes(c.dataset.id)) };
   row.classList.add('dragging');
 });
@@ -1755,15 +1750,16 @@ els.sheet.addEventListener('pointercancel', endDrag);
 
 /* ---- text style bar: font, size, bold, italic, colour, link (applies to the whole line/paragraph) ---- */
 let fmtTarget = null;
-function placeFmt() { if (window.innerWidth <= 760) document.documentElement.style.setProperty('--fmtTop', ($('#top').offsetHeight + 4) + 'px'); }
+function placeFmt() {}
 function showFmt(id) {
   fmtTarget = id; document.body.classList.add('fmt');
-  const b = getBlock(id); document.body.classList.toggle('taskfmt', !!(b && b.type === 'task'));
-  placeFmt(); updateFmt();
+  $('#fmtbar').classList.remove('off'); updateFmt();
 }
-function hideFmt() { fmtTarget = null; document.body.classList.remove('fmt', 'taskfmt'); }
+function hideFmt() { fmtTarget = null; document.body.classList.remove('fmt', 'taskfmt'); $('#fmtbar').classList.add('off'); updateFmt(); }
 function updateFmt() {
-  const b = fmtTarget && getBlock(fmtTarget); if (!b) return;
+  const b = fmtTarget && getBlock(fmtTarget);
+  document.querySelectorAll('#fmtbar button,#fmtbar select').forEach(x => { x.disabled = !b; });
+  if (!b) { $('#fmCol').innerHTML = TCOLS.map(c => `<button class="sw" type="button" disabled aria-label="${c}"><i style="--c:${c === 'auto' ? 'var(--ink)' : inkColor(c)}"></i></button>`).join(''); return; }
   $('#fmFont').value = b.fs || '';
   $('#fmSz').textContent = b.fz || (b.type === 'section' ? 21 : 20);
   $('#fmB').setAttribute('aria-pressed', String(!!b.fb)); $('#fmI').setAttribute('aria-pressed', String(!!b.fi));
@@ -1782,7 +1778,6 @@ $('#fmSm').onclick = () => fmSize(-2); $('#fmLg').onclick = () => fmSize(2);
 $('#fmB').onclick = () => fmtApply(b => { if (b.fb) delete b.fb; else b.fb = true; });
 $('#fmI').onclick = () => fmtApply(b => { if (b.fi) delete b.fi; else b.fi = true; });
 $('#fmCol').addEventListener('click', e => { const x = e.target.closest('[data-fc]'); if (x) fmtApply(b => { if (x.dataset.fc === 'auto') delete b.fc; else b.fc = x.dataset.fc; }); });
-$('#fmClose').onclick = () => { clearSel(); hideFmt(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); };
 function moveTask(id, dir) {
   begin();
   const gids = [id].concat(kidIds(id)), grp = cur.blocks.filter(b => gids.includes(b.id));
@@ -1799,14 +1794,6 @@ function moveTask(id, dir) {
   cur.blocks.splice(ti, 0, ...grp);
   fixLevels(); ensureTrailing(); renderBlocks(true); commit();
 }
-$('#taskbar').addEventListener('click', e => {
-  const b = e.target.closest('[data-ta]'); if (!b || !selId) return;
-  const id = selId, a = b.dataset.ta;
-  if (a === 'repeat') openRepeat(id); else if (a === 'indent') indentTask(id, 1); else if (a === 'outdent') indentTask(id, -1);
-  else if (a === 'up') moveTask(id, -1); else if (a === 'down') moveTask(id, 1);
-  else if (a === 'details') openDetails(id); else if (a === 'comment') openComments(cur.id, id);
-  else if (a === 'del') { deleteBlock(id); hideFmt(); }
-});
 $('#fmtbar').addEventListener('mousedown', e => { if (!e.target.closest('select,input')) e.preventDefault(); });
 window.addEventListener('resize', () => { if (fmtTarget) placeFmt(); });
 $('#fmClr').onclick = () => fmtApply(b => { ['fs', 'fz', 'fb', 'fi', 'fc', 'lk'].forEach(k => delete b[k]); });
@@ -1838,6 +1825,8 @@ els.sheet.addEventListener('click', e => {
   else if (a === 'details') openDetails(id);
   else if (a === 'comment') openComments(cur.id, id);
   else if (a === 'edit') focusBlock(id, false);
+  else if (a === 'up') moveTask(id, -1);
+  else if (a === 'down') moveTask(id, 1);
   else if (a === 'indent') indentTask(id, 1);
   else if (a === 'outdent') indentTask(id, -1);
   else if (a === 'openlink') { const bb = getBlock(id), u = bb && linkOf(bb); if (u) window.open(u, '_blank', 'noopener'); }
@@ -1882,8 +1871,7 @@ els.sheet.addEventListener('focusin', e => {
 });
 els.sheet.addEventListener('focusout', () => begin());
 document.addEventListener('click', e => {
-  if (selId && e.target.isConnected && !e.target.closest('.task') && !e.target.closest('#fmtbar') && !e.target.closest('#modal') && !e.target.closest('#toast')) clearSel();
-  if (fmtTarget && e.target.isConnected && !e.target.closest('#sheet') && !e.target.closest('#fmtbar') && !e.target.closest('#modal') && !e.target.closest('#toolbar')) hideFmt();
+  if (selId && e.target.isConnected && !e.target.closest('.task') && !e.target.closest('#top') && !e.target.closest('#modal') && !e.target.closest('#toast')) clearSel();
 });
 
 /* =====================================================================
@@ -2319,8 +2307,9 @@ const carry = $('#carry');
 let carryShowHidden = false;
 function pendingEarlier(ref) {
   const out = [];
-  pages.forEach(p => { if (p.date < ref) p.blocks.forEach(b => { if (b.type === 'task' && !b.done && b.text.trim()) out.push({ p, b }); }); });
-  out.sort((x, y) => x.p.date < y.p.date ? -1 : x.p.date > y.p.date ? 1 : (x.b.at || 0) - (y.b.at || 0));
+  pages.forEach(p => { if (p.date < ref) p.blocks.forEach(b => { if (b.type === 'task' && !b.done && b.text.trim()) out.push({ p, b, age: Math.max(0, dd(b.from || p.date, ref)) }); }); });
+  const pr = { h: 0, m: 1, l: 2, '': 3 };
+  out.sort((x, y) => (y.age - x.age) || (pr[x.b.pri || ''] - pr[y.b.pri || '']) || ((x.b.at || 0) - (y.b.at || 0)));   // longest pending first
   return out;
 }
 let carryRepOpen = false;
@@ -2333,23 +2322,23 @@ function renderCarry() {
   if (!all.length) { carry.hidden = true; if (cur) applySize(); return; }
   carry.hidden = false;
   if (S.carryHidden) {
-    carry.innerHTML = `<div class="carrybar"><span>${vis.length || !rep.length ? `⏳ ${vis.length} pending from earlier${hid.length ? ` (+${hid.length} hidden)` : ''}` : ''}${rep.length ? `${vis.length ? ' · ' : ''}🔁 ${rep.length} missed repeat${rep.length === 1 ? '' : 's'}` : ''}</span><button class="btn" type="button" data-c="showall">Show</button></div>`;
+    carry.innerHTML = `<div class="carrybar"><span>${vis.length || !rep.length ? `⏳ ${vis.length} pending from earlier${hid.length ? ` (+${hid.length} hidden)` : ''}` : ''}${rep.length ? `${vis.length ? ' · ' : ''}🔁 ${rep.length} missed repeat${rep.length === 1 ? '' : 's'}` : ''}${all.length ? ` · longest ${ageTxt(all[0].age)}` : ''}</span><button class="btn" type="button" data-c="showall">Show</button></div>`;
     applySize(); return;
   }
   const today = cur.date;   // age is counted up to the day being viewed
-  const row = ({ p, b }) => {
-    const age = Math.max(0, dd(p.date, today));
+  const row = ({ p, b, age }) => {
     return `<div class="cr${age >= 3 ? ' old' : ''}${b.hid ? ' hid' : ''}" data-p="${p.id}" data-b="${b.id}">
       <button class="cb" type="button" data-c="done" aria-label="Mark completed">☐</button>
       <div class="cm"><input class="cin" type="text" value="${esc(b.text)}" aria-label="Edit job">
         <div class="cmeta"><span class="age">Pending since ${esc(dayShort(b.from || p.date))} (${ageTxt(Math.max(0, dd(b.from || p.date, today)))})</span>${b.st ? ' · ' + esc(b.st) : ''}${b.due ? ' · due ' + esc(shortDate(b.due)) : ''} · <button class="who cwho" type="button" data-c="who">👤 ${b.who ? esc(b.who) : 'Add name'}</button></div></div>
+      <span class="agepill ${age >= 7 ? 'a3' : age >= 3 ? 'a2' : 'a1'}" title="Pending since ${esc(dayShort(b.from || p.date))}">${ageTxt(age)}</span>
       <div class="cact"><button class="ic" type="button" data-c="open" aria-label="Open that day's page" title="Open page">↗</button>${b.hid
         ? '<button class="ic" type="button" data-c="unhide" aria-label="Show again" title="Show again">👁</button>'
         : '<button class="ic" type="button" data-c="hide" aria-label="Hide this job from here" title="Hide from here">🙈</button>'}</div>
     </div>`;
   };
   const list = (carryShowHidden ? vis.concat(hid) : vis).map(row).join('');
-  const oneCard = one.length ? `<div class="carrycard"><div class="carryhead"><b>⏳ Pending from earlier (${vis.length})</b>
+  const oneCard = one.length ? `<div class="carrycard"><div class="carryhead"><b>⏳ Pending from earlier (${vis.length})</b>${vis.length ? `<span class="cnt">longest ${ageTxt(vis[0].age)} · sorted longest first</span>` : ''}
       ${hid.length ? `<button class="btn" type="button" data-c="togglehid">${carryShowHidden ? 'Hide' : 'Show'} hidden (${hid.length})</button>` : ''}
       <button class="btn" type="button" data-c="hideall">Hide all</button></div>
       <div class="carrylist">${list || '<p class="hint">Nothing visible. Tap "Show hidden" to see hidden jobs.</p>'}</div></div>` : '';
